@@ -14,7 +14,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.40.0
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.24.5
 	github.com/go-playground/validator/v10 v10.15.5
-	github.com/mansio-gmbh/api/lib/apigatewayresponse v0.0.0-20230925131337-eaf813d595fa
 	github.com/oklog/ulid/v2 v2.1.0
 	github.com/stretchr/testify v1.8.4
 )

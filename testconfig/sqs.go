@@ -7,7 +7,8 @@ import (
 )
 
 type SQSMock struct {
-	SendMessageFunc func(ctx context.Context, params *sqs.SendMessageInput, optFns ...func(*sqs.Options)) (*sqs.SendMessageOutput, error)
+	SendMessageFunc      func(ctx context.Context, params *sqs.SendMessageInput, optFns ...func(*sqs.Options)) (*sqs.SendMessageOutput, error)
+	SendMessageBatchFunc func(ctx context.Context, params *sqs.SendMessageBatchInput, optFns ...func(*sqs.Options)) (*sqs.SendMessageBatchOutput, error)
 }
 
 func (m SQSMock) SendMessage(ctx context.Context, params *sqs.SendMessageInput, optFns ...func(*sqs.Options)) (*sqs.SendMessageOutput, error) {
@@ -15,4 +16,11 @@ func (m SQSMock) SendMessage(ctx context.Context, params *sqs.SendMessageInput, 
 		return m.SendMessageFunc(ctx, params, optFns...)
 	}
 	return &sqs.SendMessageOutput{}, nil
+}
+
+func (m SQSMock) SendMessageBatch(ctx context.Context, params *sqs.SendMessageBatchInput, optFns ...func(*sqs.Options)) (*sqs.SendMessageBatchOutput, error) {
+	if m.SendMessageBatchFunc != nil {
+		return m.SendMessageBatchFunc(ctx, params, optFns...)
+	}
+	return &sqs.SendMessageBatchOutput{}, nil
 }

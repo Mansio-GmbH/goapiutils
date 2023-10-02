@@ -3,7 +3,7 @@ package apigatewayresponse_test
 import (
 	"testing"
 
-	"github.com/mansio-gmbh/api/lib/apigatewayresponse"
+	"github.com/mansio-gmbh/goapiutils/apigatewayresponse"
 	"github.com/stretchr/testify/require"
 )
 
