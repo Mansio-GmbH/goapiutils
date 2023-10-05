@@ -7,6 +7,7 @@ type QueryConfig struct {
 	IndexName                 *string
 	Limit                     *int32
 	KeyConditionExpression    *string
+	FilterExpression          *string
 	ExpressionAttributeValues map[string]types.AttributeValue
 	ExclusiveStartKey         map[string]types.AttributeValue
 	ReverseOrder              bool

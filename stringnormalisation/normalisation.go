@@ -19,10 +19,15 @@ func Normalise(input string) (string, error) {
 	if len(input) < MIN_STRING_LENGTH {
 		return "", ErrInputToShort
 	}
-	regex := regexp.MustCompile("[^a-zA-Z0-9-_~]")
-	output := strings.ToUpper(regex.ReplaceAllString(input, ""))
+	output := NormaliseWithoutLengthCheck(input)
 	if len(output) < MIN_STRING_LENGTH {
 		return "", ErrOutputToShort
 	}
 	return output, nil
+}
+
+func NormaliseWithoutLengthCheck(input string) string {
+	regex := regexp.MustCompile("[^a-zA-Z0-9-_~]")
+	output := strings.ToUpper(regex.ReplaceAllString(input, ""))
+	return output
 }
