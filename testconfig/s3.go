@@ -8,8 +8,9 @@ import (
 )
 
 type S3Mock struct {
-	GetObjectFunc func(ctx context.Context, params *s3.GetObjectInput, optFns ...func(*s3.Options)) (*s3.GetObjectOutput, error)
-	PutObjectFunc func(ctx context.Context, params *s3.PutObjectInput, optFns ...func(*s3.Options)) (*s3.PutObjectOutput, error)
+	GetObjectFunc           func(ctx context.Context, params *s3.GetObjectInput, optFns ...func(*s3.Options)) (*s3.GetObjectOutput, error)
+	PutObjectFunc           func(ctx context.Context, params *s3.PutObjectInput, optFns ...func(*s3.Options)) (*s3.PutObjectOutput, error)
+	GetObjectAttributesFunc func(ctx context.Context, params *s3.GetObjectAttributesInput, optFns ...func(*s3.Options)) (*s3.GetObjectAttributesOutput, error)
 }
 
 func (m S3Mock) GetObject(ctx context.Context, params *s3.GetObjectInput, optFns ...func(*s3.Options)) (*s3.GetObjectOutput, error) {
@@ -24,6 +25,13 @@ func (m S3Mock) PutObject(ctx context.Context, params *s3.PutObjectInput, optFns
 		return m.PutObjectFunc(ctx, params, optFns...)
 	}
 	return &s3.PutObjectOutput{}, nil
+}
+
+func (m S3Mock) GetObjectAttributes(ctx context.Context, params *s3.GetObjectAttributesInput, optFns ...func(*s3.Options)) (*s3.GetObjectAttributesOutput, error) {
+	if m.GetObjectAttributesFunc != nil {
+		return m.GetObjectAttributesFunc(ctx, params, optFns...)
+	}
+	return &s3.GetObjectAttributesOutput{}, nil
 }
 
 type PresignedS3Mock struct {
