@@ -27,7 +27,7 @@ func Normalise(input string) (string, error) {
 }
 
 func NormaliseWithoutLengthCheck(input string) string {
-	regex := regexp.MustCompile("[^a-zA-Z0-9-_~]")
+	regex := regexp.MustCompile(`[^\p{L}\p{N}]+`)
 	output := strings.ToUpper(regex.ReplaceAllString(input, ""))
 	return output
 }
