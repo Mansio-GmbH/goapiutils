@@ -5,10 +5,10 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/mansio-gmbh/goapiutils/awsif"
 )
 
-func Write(ctx context.Context, client *dynamodb.Client, requests map[string][]types.WriteRequest) error {
-
+func Write(ctx context.Context, client awsif.DynamoDBClient, requests map[string][]types.WriteRequest) error {
 	writeBatchesSplitted := make([]map[string][]types.WriteRequest, 0)
 
 	const chunkSize = 25
