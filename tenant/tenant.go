@@ -1,8 +1,9 @@
 package tenant
 
 import (
-	"regexp"
 	"strings"
+
+	"github.com/mansio-gmbh/goapiutils/stringnormalisation"
 )
 
 type Tenant struct {
@@ -14,8 +15,7 @@ type WithTenant struct {
 }
 
 func (t Tenant) TenantID() string {
-	regex := regexp.MustCompile("[^a-zA-Z0-9-_~]")
-	return strings.ToUpper(regex.ReplaceAllString(t.ID, ""))
+	return strings.ToUpper(stringnormalisation.NormaliseWithoutLengthCheck(t.ID))
 }
 
 func Parse(tenant string) Tenant {

@@ -1,8 +1,9 @@
 package network
 
 import (
-	"regexp"
 	"strings"
+
+	"github.com/mansio-gmbh/goapiutils/stringnormalisation"
 )
 
 type (
@@ -12,8 +13,7 @@ type (
 )
 
 func (n Network) NetworkID() string {
-	regex := regexp.MustCompile("[^a-zA-Z0-9-_~]")
-	return strings.ToUpper(regex.ReplaceAllString(n.ID, ""))
+	return strings.ToUpper(stringnormalisation.NormaliseWithoutLengthCheck(n.ID))
 }
 
 func Parse(network string) Network {
