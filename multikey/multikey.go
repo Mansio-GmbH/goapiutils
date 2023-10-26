@@ -98,3 +98,11 @@ func anyToString(v any) string {
 	log.Fatal("val type not handled")
 	return ""
 }
+
+func DateOnly(t *time.Time) string {
+	return t.Format("2006-01-02")
+}
+
+func DateOnlyVal(t time.Time) string {
+	return DateOnly(&t)
+}

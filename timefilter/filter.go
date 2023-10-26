@@ -11,7 +11,3 @@ func TimeMinMaxSearchValueForULID(t time.Time) string {
 	id.SetTime(ulid.Timestamp(t))
 	return id.String()
 }
-
-func TimeMinMaxSearchValueByDateIndex(t time.Time) string {
-	return t.Format(time.RFC3339)
-}

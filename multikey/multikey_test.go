@@ -59,6 +59,12 @@ func TestKey(t *testing.T) {
 			},
 			expected: "foo",
 		},
+		{
+			parts: []any{
+				multikey.DateOnlyVal(must.Must(time.Parse(time.RFC3339, "2023-10-26T10:00:00+02:00"))),
+			},
+			expected: "2023-10-26",
+		},
 	}
 
 	for _, test := range testcases {
