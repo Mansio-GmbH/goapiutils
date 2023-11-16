@@ -36,11 +36,19 @@ func (m S3Mock) GetObjectAttributes(ctx context.Context, params *s3.GetObjectAtt
 
 type PresignedS3Mock struct {
 	PresignGetObjectFunc func(ctx context.Context, params *s3.GetObjectInput, optFns ...func(*s3.PresignOptions)) (*v4.PresignedHTTPRequest, error)
+	PresignPutObjectFunc func(ctx context.Context, params *s3.PutObjectInput, optFns ...func(*s3.PresignOptions)) (*v4.PresignedHTTPRequest, error)
 }
 
 func (m PresignedS3Mock) PresignGetObject(ctx context.Context, params *s3.GetObjectInput, optFns ...func(*s3.PresignOptions)) (*v4.PresignedHTTPRequest, error) {
 	if m.PresignGetObjectFunc != nil {
 		return m.PresignGetObjectFunc(ctx, params, optFns...)
+	}
+	return &v4.PresignedHTTPRequest{}, nil
+}
+
+func (m PresignedS3Mock) PresignPutObject(ctx context.Context, params *s3.PutObjectInput, optFns ...func(*s3.PresignOptions)) (*v4.PresignedHTTPRequest, error) {
+	if m.PresignPutObjectFunc != nil {
+		return m.PresignPutObjectFunc(ctx, params, optFns...)
 	}
 	return &v4.PresignedHTTPRequest{}, nil
 }
