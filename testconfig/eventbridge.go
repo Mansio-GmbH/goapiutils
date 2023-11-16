@@ -11,5 +11,8 @@ type MockedEventBridge struct {
 }
 
 func (m MockedEventBridge) PutEvents(ctx context.Context, params *eventbridge.PutEventsInput, optFns ...func(*eventbridge.Options)) (*eventbridge.PutEventsOutput, error) {
-	return nil, nil
+	if m.PutEventsFunc != nil {
+		return m.PutEventsFunc(ctx, params, optFns...)
+	}
+	return &eventbridge.PutEventsOutput{}, nil
 }
