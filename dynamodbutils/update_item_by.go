@@ -35,9 +35,6 @@ func UpdateItemBy(ctx context.Context, tableName string, client awsif.DynamoDBCl
 		expressionAttributeNames["#"+fieldName] = fieldName
 	}
 
-	if len(updateExpression) == 0 {
-		return nil
-	}
 	updateExpression = append(updateExpression, "#updatedAt = :updatedAt")
 	expressionAttributeNames["#updatedAt"] = "updatedAt"
 	expressionAttributeValues[":updatedAt"] = must.Must(attributevalue.Marshal(time.Now()))
