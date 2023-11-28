@@ -2,10 +2,12 @@ package chrono
 
 import (
 	"encoding/json"
+	"errors"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/mansio-gmbh/goapiutils/must"
 )
 
 type Date struct {
@@ -145,6 +147,32 @@ func ParseDate(str string) (Date, error) {
 		return Date{}, err
 	}
 	return Time{val: t}.Date(), nil
+}
+
+func ParseDatePtr(str *string) (Date, error) {
+	if str == nil {
+		return Date{}, errors.New("input is nil")
+	}
+	return ParseDate(*str)
+}
+
+func ParseDateOrNil(str string) *Date {
+	t, err := parseTime(str)
+	if err != nil {
+		return nil
+	}
+	return Time{val: t}.Date().PtrOrNil()
+}
+
+func ParseDatePtrOrNil(str *string) *Date {
+	if str != nil {
+		return nil
+	}
+	return ParseDateOrNil(*str)
+}
+
+func MustParseDate(str string) Date {
+	return must.Must(ParseDate(str))
 }
 
 func (d Date) Format(optFns ...func(*fmtCfg)) string {

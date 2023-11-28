@@ -7,6 +7,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/mansio-gmbh/goapiutils/must"
 )
 
 type Time struct {
@@ -271,6 +272,32 @@ func Parse(str string) (Time, error) {
 		return Time{}, err
 	}
 	return Time{val: val}, nil
+}
+
+func ParsePtr(str *string) (Time, error) {
+	if str == nil {
+		return Time{}, errors.New("input is nil")
+	}
+	return Parse(*str)
+}
+
+func ParseOrNil(str string) *Time {
+	t, err := Parse(str)
+	if err != nil {
+		return nil
+	}
+	return t.PtrOrNil()
+}
+
+func ParsePtrOrNil(str *string) *Time {
+	if str != nil {
+		return nil
+	}
+	return ParseOrNil(*str)
+}
+
+func MustParse(str string) Time {
+	return must.Must(Parse(str))
 }
 
 func (t *Time) UnmarshalDynamoDBAttributeValue(v types.AttributeValue) error {
