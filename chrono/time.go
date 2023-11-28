@@ -13,6 +13,13 @@ type Time struct {
 	val time.Time
 }
 
+func (t Time) PtrOrNil() *Time {
+	if t.IsZero() {
+		return nil
+	}
+	return &t
+}
+
 func (t Time) ToStd() time.Time {
 	return t.val
 }

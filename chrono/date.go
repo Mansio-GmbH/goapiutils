@@ -30,6 +30,13 @@ func DateFromTimePtr(t *Time) *Date {
 	return &d
 }
 
+func (d Date) PtrOrNil() *Date {
+	if d.IsZero() {
+		return nil
+	}
+	return &d
+}
+
 func (t *Date) UnmarshalDynamoDBAttributeValue(v types.AttributeValue) error {
 	val := time.Time{}
 	if err := attributevalue.Unmarshal(v, &val); err != nil {
