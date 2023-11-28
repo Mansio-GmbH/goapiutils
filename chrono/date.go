@@ -149,6 +149,14 @@ func (d Date) UnixNano() int64 {
 	return d.val.UnixNano()
 }
 
+func (d Date) Format(optFns ...func(*fmtCfg)) string {
+	cfg := &fmtCfg{layout: "2006-01-02"}
+	for _, optFn := range optFns {
+		optFn(cfg)
+	}
+	return d.val.Format(cfg.layout)
+}
+
 func (t *Date) UnmarshalJSON(b []byte) error {
 	var (
 		str string = ""

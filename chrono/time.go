@@ -242,6 +242,22 @@ func (t Time) Round(d Duration) Time {
 	}
 }
 
+type fmtCfg struct {
+	layout string
+}
+
+func WithLayout(layout string) func(*fmtCfg) {
+	return func(cfg *fmtCfg) { cfg.layout = layout }
+}
+
+func (t Time) Format(optFns ...func(*fmtCfg)) string {
+	cfg := &fmtCfg{layout: time.RFC3339}
+	for _, optFn := range optFns {
+		optFn(cfg)
+	}
+	return t.val.Format(cfg.layout)
+}
+
 func Parse(str string) (Time, error) {
 	val, err := parseTime(str)
 	if err != nil {

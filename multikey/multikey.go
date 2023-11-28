@@ -8,6 +8,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/mansio-gmbh/goapiutils/chrono"
 	"github.com/mansio-gmbh/goapiutils/must"
 	"github.com/mansio-gmbh/goapiutils/network"
 	"github.com/mansio-gmbh/goapiutils/tenant"
@@ -74,6 +75,14 @@ func anyToString(v any) string {
 		return val
 	case *string:
 		return *val
+	case *chrono.Time:
+		return val.UTC().Format()
+	case chrono.Time:
+		return val.UTC().Format()
+	case *chrono.Date:
+		return val.UTC().Format()
+	case chrono.Date:
+		return val.UTC().Format()
 	case *time.Time:
 		return val.UTC().Format(time.RFC3339)
 	case time.Time:
