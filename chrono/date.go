@@ -37,25 +37,8 @@ func (d Date) PtrOrNil() *Date {
 	return &d
 }
 
-func (t *Date) UnmarshalDynamoDBAttributeValue(v types.AttributeValue) error {
-	val := time.Time{}
-	if err := attributevalue.Unmarshal(v, &val); err != nil {
-		return err
-	}
-	t.val = val
-	return nil
-}
-
 func (t *Date) Time() Time {
 	return Time{val: t.val}
-}
-
-func (t Date) MarshalDynamoDBAttributeValue() (types.AttributeValue, error) {
-	return attributevalue.Marshal(t.val)
-}
-
-func (t *Date) MarshalJSON() ([]byte, error) {
-	return json.Marshal(t.val)
 }
 
 func (d Date) After(u Time) bool {
@@ -156,12 +139,37 @@ func (d Date) UnixNano() int64 {
 	return d.val.UnixNano()
 }
 
+func ParseDate(str string) (Date, error) {
+	t, err := parseTime(str)
+	if err != nil {
+		return Date{}, err
+	}
+	return Time{val: t}.Date(), nil
+}
+
 func (d Date) Format(optFns ...func(*fmtCfg)) string {
 	cfg := &fmtCfg{layout: "2006-01-02"}
 	for _, optFn := range optFns {
 		optFn(cfg)
 	}
 	return d.val.Format(cfg.layout)
+}
+
+func (t *Date) UnmarshalDynamoDBAttributeValue(v types.AttributeValue) error {
+	val := time.Time{}
+	if err := attributevalue.Unmarshal(v, &val); err != nil {
+		return err
+	}
+	t.val = val
+	return nil
+}
+
+func (t Date) MarshalDynamoDBAttributeValue() (types.AttributeValue, error) {
+	return attributevalue.Marshal(t.val)
+}
+
+func (t *Date) MarshalJSON() ([]byte, error) {
+	return json.Marshal(t.val)
 }
 
 func (t *Date) UnmarshalJSON(b []byte) error {
