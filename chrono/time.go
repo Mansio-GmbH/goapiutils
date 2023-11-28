@@ -109,7 +109,13 @@ func (t Time) YearDay() int {
 	return t.val.YearDay()
 }
 
-func (t Time) Add(d Duration) Time {
+func (t Time) Add(d time.Duration) Time {
+	return Time{
+		val: t.val.Add(d),
+	}
+}
+
+func (t Time) AddDuration(d Duration) Time {
 	return Time{
 		val: t.val.Add(d.val),
 	}
@@ -236,7 +242,7 @@ func (t Time) Round(d Duration) Time {
 	}
 }
 
-func TimeParse(str string) (Time, error) {
+func Parse(str string) (Time, error) {
 	val, err := parseTime(str)
 	if err != nil {
 		return Time{}, err

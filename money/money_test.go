@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/mansio-gmbh/api/lib/money"
+	"github.com/mansio-gmbh/goapiutils/money"
 	"github.com/mansio-gmbh/goapiutils/must"
 	"github.com/stretchr/testify/require"
 )

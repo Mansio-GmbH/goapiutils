@@ -3,7 +3,7 @@ package money_test
 import (
 	"testing"
 
-	"github.com/mansio-gmbh/api/lib/money"
+	"github.com/mansio-gmbh/goapiutils/money"
 	"github.com/stretchr/testify/require"
 )
 

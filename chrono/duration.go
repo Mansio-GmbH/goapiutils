@@ -12,6 +12,10 @@ type Duration struct {
 	val time.Duration
 }
 
+func DurationFrom(d time.Duration) Duration {
+	return Duration{val: d}
+}
+
 func (d Duration) String() string {
 	return d.val.String()
 }
@@ -50,6 +54,14 @@ func (d Duration) Round(m Duration) Duration {
 
 func (d Duration) Abs() Duration {
 	return Duration{val: d.val.Abs()}
+}
+
+func ParseDuration(d string) (Duration, error) {
+	val, err := parseDuration(d)
+	if err != nil {
+		return Duration{}, err
+	}
+	return Duration{val: val}, nil
 }
 
 func (d Duration) MarshalDynamoDBAttributeValue() (types.AttributeValue, error) {

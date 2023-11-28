@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
-	"github.com/mansio-gmbh/api/lib/money"
+	"github.com/mansio-gmbh/goapiutils/money"
 	"github.com/stretchr/testify/require"
 )
 
