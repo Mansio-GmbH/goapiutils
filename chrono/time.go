@@ -313,7 +313,7 @@ func (t Time) MarshalDynamoDBAttributeValue() (types.AttributeValue, error) {
 	return attributevalue.Marshal(t.val)
 }
 
-func (t *Time) MarshalJSON() ([]byte, error) {
+func (t Time) MarshalJSON() ([]byte, error) {
 	return json.Marshal(t.val)
 }
 
@@ -339,10 +339,10 @@ func parseTime(t string) (time.Time, error) {
 	if time, err := time.Parse("02.01.2006 15:04", t); err == nil {
 		return time, nil
 	}
-	if time, err := time.Parse("02.01.2006", t); err == nil {
+	if time, err := time.ParseInLocation("02.01.2006", t, time.Local); err == nil {
 		return time, nil
 	}
-	if time, err := time.Parse("2006-01-02", t); err == nil {
+	if time, err := time.ParseInLocation("2006-01-02", t, time.Local); err == nil {
 		return time, nil
 	}
 

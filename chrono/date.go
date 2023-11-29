@@ -196,7 +196,7 @@ func (t Date) MarshalDynamoDBAttributeValue() (types.AttributeValue, error) {
 	return attributevalue.Marshal(t.val)
 }
 
-func (t *Date) MarshalJSON() ([]byte, error) {
+func (t Date) MarshalJSON() ([]byte, error) {
 	return json.Marshal(t.val)
 }
 
