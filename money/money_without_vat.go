@@ -1,6 +1,8 @@
 package money
 
 import (
+	"math"
+
 	"github.com/Rhymond/go-money"
 )
 
@@ -29,6 +31,19 @@ func (m *MoneyWithoutVat) Add(om *MoneyWithoutVat) (*MoneyWithoutVat, error) {
 		return nil, err
 	}
 	return &MoneyWithoutVat{money: *rm}, nil
+}
+
+func (m *MoneyWithoutVat) Multiply(n int64) *MoneyWithoutVat {
+	return &MoneyWithoutVat{money: *m.money.Multiply(n)}
+}
+
+func (m *MoneyWithoutVat) MultiplyByFloat(x float64) *MoneyWithoutVat {
+	newAmount := int64(math.Round(float64(m.Amount()) * x))
+	return NewWithoutVat(newAmount, m.CurrencyCode())
+}
+
+func (m *MoneyWithoutVat) Percentage(perc float64) *MoneyWithoutVat {
+	return m.MultiplyByFloat(perc / 100.0)
 }
 
 func (m *MoneyWithoutVat) Amount() int64 {
