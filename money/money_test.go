@@ -188,6 +188,66 @@ func TestMoneyMultiply(t *testing.T) {
 	}
 }
 
+func TestMoneyMultiplyByFloat(t *testing.T) {
+	testCases := []struct {
+		m1          *money.Money
+		factor      []float64
+		amountNet   []int64
+		amountGross []int64
+	}{
+		{
+			m1:          money.NewFromGross(100_00, "EUR", money.VAT_19_00),
+			factor:      []float64{0, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.0, 1.10, 1.20, 1.30, 1.40, 1.50},
+			amountNet:   []int64{0, 8_40, 16_81, 25_21, 33_61, 42_02, 50_42, 58_82, 67_23, 75_63, 84_03, 92_44, 100_84, 109_24, 117_65, 126_05},
+			amountGross: []int64{0, 10_00, 20_00, 30_00, 40_00, 50_00, 60_00, 70_00, 80_00, 90_00, 100_00, 110_00, 120_00, 130_00, 140_00, 150_00},
+		},
+		{
+			m1:          money.NewFromNet(100_00, "EUR", money.VAT_19_00),
+			factor:      []float64{0, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00, 1.10, 1.20, 1.30, 1.40, 1.50},
+			amountNet:   []int64{0, 10_00, 20_00, 30_00, 40_00, 50_00, 60_00, 70_00, 80_00, 90_00, 100_00, 110_00, 120_00, 130_00, 140_00, 150_00},
+			amountGross: []int64{0, 11_90, 23_80, 35_70, 47_60, 59_50, 71_40, 83_30, 95_20, 107_10, 119_00, 130_90, 142_80, 154_70, 166_60, 178_50},
+		},
+	}
+
+	for _, testCase := range testCases {
+		for idx, x := range testCase.factor {
+			m3 := testCase.m1.MultiplyByFloat(x)
+			require.Equal(t, testCase.amountNet[idx], m3.AmountNet(), fmt.Sprintf("Test %.2f * %s", x, testCase.m1.Display()))
+			require.Equal(t, testCase.amountGross[idx], m3.AmountGross(), fmt.Sprintf("Test %.2f * %s", x, testCase.m1.Display()))
+		}
+	}
+}
+
+func TestMoneyPercentage(t *testing.T) {
+	testCases := []struct {
+		m1          *money.Money
+		percentage  []float64
+		amountNet   []int64
+		amountGross []int64
+	}{
+		{
+			m1:          money.NewFromGross(100_00, "EUR", money.VAT_19_00),
+			percentage:  []float64{0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150},
+			amountNet:   []int64{0, 8_40, 16_81, 25_21, 33_61, 42_02, 50_42, 58_82, 67_23, 75_63, 84_03, 92_44, 100_84, 109_24, 117_65, 126_05},
+			amountGross: []int64{0, 10_00, 20_00, 30_00, 40_00, 50_00, 60_00, 70_00, 80_00, 90_00, 100_00, 110_00, 120_00, 130_00, 140_00, 150_00},
+		},
+		{
+			m1:          money.NewFromNet(100_00, "EUR", money.VAT_19_00),
+			percentage:  []float64{0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150},
+			amountNet:   []int64{0, 10_00, 20_00, 30_00, 40_00, 50_00, 60_00, 70_00, 80_00, 90_00, 100_00, 110_00, 120_00, 130_00, 140_00, 150_00},
+			amountGross: []int64{0, 11_90, 23_80, 35_70, 47_60, 59_50, 71_40, 83_30, 95_20, 107_10, 119_00, 130_90, 142_80, 154_70, 166_60, 178_50},
+		},
+	}
+
+	for _, testCase := range testCases {
+		for idx, perc := range testCase.percentage {
+			m3 := testCase.m1.Percentage(perc)
+			require.Equal(t, testCase.amountNet[idx], m3.AmountNet(), fmt.Sprintf("Test %.2f of %s", perc, testCase.m1.Display()))
+			require.Equal(t, testCase.amountGross[idx], m3.AmountGross(), fmt.Sprintf("Test %.2f of %s", perc, testCase.m1.Display()))
+		}
+	}
+}
+
 func TestDisplay(t *testing.T) {
 	testCases := []struct {
 		m        *money.Money

@@ -185,6 +185,16 @@ func (m *Money) Multiply(n int64) *Money {
 	return m.newWithAmount(m.calculateWithMoney().Multiply(n))
 }
 
+func (m *Money) MultiplyByFloat(x float64) *Money {
+	calculateMoney := m.calculateWithMoney()
+	newAmount := int64(math.Round(float64(calculateMoney.Amount()) * x))
+	return m.newWithAmount(money.New(newAmount, calculateMoney.Currency().Code))
+}
+
+func (m *Money) Percentage(perc float64) *Money {
+	return m.MultiplyByFloat(perc/100.0)
+}
+
 func (m *Money) VATIncluded() *MoneyWithoutVat {
 	money, _ := m.grossMoney.Subtract(m.netMoney)
 	return &MoneyWithoutVat{money: *money}
