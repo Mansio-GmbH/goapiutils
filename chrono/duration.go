@@ -107,3 +107,32 @@ func (d *Duration) UnmarshalJSON(b []byte) error {
 func parseDuration(d string) (time.Duration, error) {
 	return time.ParseDuration(d)
 }
+func (d Duration) IsZero() bool {
+	return d.val == 0
+}
+
+func (d Duration) ToStd() time.Duration {
+	return d.val
+}
+
+func (d Duration) ToStdPtr() *time.Duration {
+	if d.IsZero() {
+		return nil
+	}
+	return &d.val
+}
+func (d Duration) Smaller(od Duration) bool {
+	return d.val < od.val
+}
+
+func (d Duration) SmallerOrEqual(od Duration) bool {
+	return d.val <= od.val
+}
+
+func (d Duration) Greater(od Duration) bool {
+	return d.val > od.val
+}
+
+func (d Duration) GreaterOrEqual(od Duration) bool {
+	return d.val >= od.val
+}
