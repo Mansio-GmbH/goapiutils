@@ -74,6 +74,6 @@ func TestKey(t *testing.T) {
 }
 
 func TestKeyAW(t *testing.T) {
-	key := multikey.KeyAV(tenant.Tenant{ID: "foo"}, multikey.ADDRESS)
-	require.Equal(t, types.AttributeValueMemberS{Value: "TENANT#FOO#ADDRESS"}, *key.(*types.AttributeValueMemberS))
+	key := multikey.KeyAV(tenant.Tenant{ID: "foo"}, "TOUR")
+	require.Equal(t, types.AttributeValueMemberS{Value: "TENANT#FOO#TOUR"}, *key.(*types.AttributeValueMemberS))
 }

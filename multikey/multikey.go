@@ -16,38 +16,13 @@ import (
 )
 
 const (
-	TENANT           = "TENANT"
-	TOUR             = "TOUR"
-	TRIP             = "TRIP"
-	IMPORTEDTOUR     = "IMPORTEDTOUR"
-	HANDOVERSTATION  = "HANDOVERSTATION"
-	NAME             = "NAME"
-	ADDRESS          = "ADDRESS"
-	NETWORK          = "NETWORK"
-	ID               = "ID"
-	DATA             = "DATA"
-	EXTERNALNUMBER   = "EXTERNALNUMBER"
-	METADATA         = "METADATA"
-	USER             = "USER"
-	PLANNEDDEPARTURE = "PLANNEDDEPARTURE"
-	PLANNEDARRIVAL   = "PLANNEDARRIVAL"
-	MATCHSTATE       = "MATCHSTATE"
-	EVENT            = "EVENT"
-	COMPANY          = "COMPANY"
-	TRAILER          = "TRAILER"
-	LICENSEPLATE     = "LICENSEPLATE"
-	CREATEDAT        = "CREATEDAT"
-	VARIANT          = "VARIANT"
-	QUERY            = "QUERY"
-	SERVICECASE      = "SERVICECASE"
-	STATE            = "STATE"
-	CREATED_AT       = "CREATED_AT"
-	TRUCK            = "TRUCK"
-	DEPOT            = "DEPOT"
-	DOCUMENTUPLOADER = "DOCUMENTUPLOADER"
-	BUCKET           = "BUCKET"
-	SECRET           = "SECRET"
-	MATCHINGRESULT   = "MATCHINGRESULT"
+	TENANT    = "TENANT"
+	NETWORK   = "NETWORK"
+	ID        = "ID"
+	DATA      = "DATA"
+	METADATA  = "METADATA"
+	CREATEDAT = "CREATEDAT"
+	STATE     = "STATE"
 )
 
 type ToString interface {
@@ -80,9 +55,9 @@ func anyToString(v any) string {
 	case chrono.Time:
 		return val.UTC().Format()
 	case *chrono.Date:
-		return val.UTC().Format()
+		return val.Format()
 	case chrono.Date:
-		return val.UTC().Format()
+		return val.Format()
 	case *time.Time:
 		return val.UTC().Format(time.RFC3339)
 	case time.Time:
