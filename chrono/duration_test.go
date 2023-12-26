@@ -1,11 +1,13 @@
 package chrono_test
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 
 	"github.com/mansio-gmbh/goapiutils/chrono"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDurationComparison(t *testing.T) {
@@ -90,4 +92,34 @@ func TestJSONMarshaling(t *testing.T) {
 	err = unmarshaledDuration.UnmarshalJSON(jsonData)
 	assert.NoError(t, err, "UnmarshalJSON should not return an error")
 	assert.Equal(t, d, unmarshaledDuration, "Unmarshaled duration should match")
+}
+
+func TestUnmarshalStringDuration(t *testing.T) {
+	jsonData := `"6h3m"`
+
+	d := chrono.Duration(0)
+	err := json.Unmarshal([]byte(jsonData), &d)
+	require.NoError(t, err)
+	require.Equal(t, 3*chrono.Minute+chrono.Hour*6, d)
+}
+
+func TestUnmarshalNonStringDuration(t *testing.T) {
+	jsonData := `{"minutes": 1, "days": 1, "weeks": 1, "seconds": 1, "hours": 1}`
+
+	d := chrono.Duration(0)
+	err := json.Unmarshal([]byte(jsonData), &d)
+	require.NoError(t, err)
+	require.Equal(t, time.Second+time.Minute+time.Hour*24+time.Hour+time.Hour*24*7, d.ToStd())
+}
+
+func TestMarshalDuration(t *testing.T) {
+	seconds := time.Duration(48)
+	minutes := time.Duration(33)
+	hours := time.Duration(11)
+	days := time.Duration(3)
+	weeks := time.Duration(2)
+	testDur := chrono.DurationFrom(((7*weeks+days)*24+hours)*time.Hour + (minutes * time.Minute) + (seconds * time.Second))
+	jsonData, err := json.Marshal(testDur)
+	require.NoError(t, err)
+	require.Equal(t, `{"seconds":48,"minutes":33,"hours":11,"days":3,"weeks":2}`, string(jsonData))
 }

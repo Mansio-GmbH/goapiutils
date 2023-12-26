@@ -86,7 +86,7 @@ func (m *Money) UnmarshalDynamoDBAttributeValue(v types.AttributeValue) error {
 	return nil
 }
 
-func (m *Money) MarshalJSON() ([]byte, error) {
+func (m Money) MarshalJSON() ([]byte, error) {
 	mm := jsonMarshalMoney{
 		AmountNet:           m.AmountNetAsMajorUnits(),
 		AmountGross:         m.AmountGrossAsMajorUnits(),

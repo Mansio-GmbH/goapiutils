@@ -125,26 +125,20 @@ func (t Time) Add(d time.Duration) Time {
 
 func (t Time) AddDuration(d Duration) Time {
 	return Time{
-		val: t.val.Add(d.val),
+		val: t.val.Add(d.ToStd()),
 	}
 }
 
 func (t Time) Sub(u Time) Duration {
-	return Duration{
-		val: t.val.Sub(u.val),
-	}
+	return Duration(t.val.Sub(u.val))
 }
 
 func Since(t Time) Duration {
-	return Duration{
-		val: time.Since(t.val),
-	}
+	return Duration(time.Since(t.val))
 }
 
 func Until(t Time) Duration {
-	return Duration{
-		val: time.Until(t.val),
-	}
+	return Duration(time.Until(t.val))
 }
 
 func (t Time) AddDate(years int, months int, days int) Time {
@@ -240,13 +234,13 @@ func NewTime(year int, month time.Month, day, hour, min, sec, nsec int, loc *tim
 
 func (t Time) Truncate(d Duration) Time {
 	return Time{
-		val: t.val.Truncate(d.val),
+		val: t.val.Truncate(d.ToStd()),
 	}
 }
 
 func (t Time) Round(d Duration) Time {
 	return Time{
-		val: t.val.Round(d.val),
+		val: t.val.Round(d.ToStd()),
 	}
 }
 

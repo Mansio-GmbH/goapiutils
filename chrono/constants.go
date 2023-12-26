@@ -32,14 +32,14 @@ const (
 )
 
 const (
-	Nanosecond  = time.Nanosecond
-	Microsecond = time.Microsecond
-	Millisecond = time.Millisecond
-	Second      = time.Second
-	Minute      = time.Minute
-	Hour        = time.Hour
-	Day         = Hour * 24
-	Week        = 7 * Day
+	Nanosecond  = Duration(time.Nanosecond)
+	Microsecond = Duration(time.Microsecond)
+	Millisecond = Duration(time.Millisecond)
+	Second      = Duration(time.Second)
+	Minute      = Duration(time.Minute)
+	Hour        = Duration(time.Hour)
+	Day         = Duration(Hour * 24)
+	Week        = Duration(7 * Day)
 )
 
 type Location = time.Location
