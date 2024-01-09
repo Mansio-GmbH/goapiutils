@@ -9,8 +9,8 @@ import (
 )
 
 func TestMarshalDate(t *testing.T) {
-	ti := chrono.MustParse("2023-11-29")
+	ti := chrono.MustParseDate("2023-11-29")
 	byt, err := json.Marshal(ti)
 	require.NoError(t, err)
-	require.Equal(t, `"2023-11-29T00:00:00+01:00"`, string(byt))
+	require.Equal(t, `"2023-11-29"`, string(byt))
 }

@@ -197,7 +197,8 @@ func (t Date) MarshalDynamoDBAttributeValue() (types.AttributeValue, error) {
 }
 
 func (t Date) MarshalJSON() ([]byte, error) {
-	return json.Marshal(t.val)
+	dateStr := t.val.Format("2006-01-02")
+	return json.Marshal(dateStr)
 }
 
 func (t *Date) UnmarshalJSON(b []byte) error {
