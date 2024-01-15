@@ -3,7 +3,7 @@ package pagination
 type (
 	Pagination struct {
 		Key   *string `json:"key"`
-		Limit *int64  `json:"limit" validate:"omitempty,gt=0,lte=50"`
+		Limit *int64  `json:"limit" validate:"omitempty,gt=0,lte=500"`
 	}
 
 	PaginatedResponse struct {
