@@ -31,3 +31,16 @@ func VatByCode(code string) (*vat, error) {
 	}
 	return vat, nil
 }
+
+func Display(code string) string {
+	switch code {
+	case VAT_00_00.code:
+		return ""
+	case VAT_19_00.code:
+		return "19 % MwSt"
+	case VAT_07_00.code:
+		return "7 % MwSt"
+	default:
+		return "Unknown VAT"
+	}
+}
