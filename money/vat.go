@@ -36,14 +36,5 @@ func VatByCode(code string) (*vat, error) {
 }
 
 func (v vat) Display() string {
-	switch v.code {
-	case VAT_00_00.code:
-		return fmt.Sprintf("%.2f MwSt", float64(v.rate)/float64(v.denominator))
-	case VAT_19_00.code:
-		return fmt.Sprintf("%.2f MwSt", float64(v.rate)/float64(v.denominator))
-	case VAT_07_00.code:
-		return fmt.Sprintf("%.2f MwSt", float64(v.rate)/float64(v.denominator))
-	default:
-		return "Unknown VAT"
-	}
+	return fmt.Sprintf("%.2f MwSt", float64(v.rate)/float64(v.denominator))
 }
