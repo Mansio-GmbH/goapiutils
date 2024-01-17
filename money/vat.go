@@ -1,6 +1,9 @@
 package money
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 type vat struct {
 	rate        int64
@@ -32,14 +35,14 @@ func VatByCode(code string) (*vat, error) {
 	return vat, nil
 }
 
-func Display(code string) string {
-	switch code {
+func (v vat) Display() string {
+	switch v.code {
 	case VAT_00_00.code:
-		return ""
+		return fmt.Sprintf("%.2f MwSt", float64(v.rate)/float64(v.denominator))
 	case VAT_19_00.code:
-		return "19 % MwSt"
+		return fmt.Sprintf("%.2f MwSt", float64(v.rate)/float64(v.denominator))
 	case VAT_07_00.code:
-		return "7 % MwSt"
+		return fmt.Sprintf("%.2f MwSt", float64(v.rate)/float64(v.denominator))
 	default:
 		return "Unknown VAT"
 	}
