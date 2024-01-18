@@ -1,6 +1,9 @@
 package money
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 type vat struct {
 	rate        int64
@@ -30,4 +33,8 @@ func VatByCode(code string) (*vat, error) {
 		return nil, errors.New("vat rate not found")
 	}
 	return vat, nil
+}
+
+func (v vat) Display() string {
+	return fmt.Sprintf("%.2f MwSt", float64(v.rate)/float64(v.denominator))
 }
