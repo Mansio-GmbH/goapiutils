@@ -6,6 +6,9 @@ import (
 	"github.com/mansio-gmbh/goapiutils/lastevaluatedkey"
 )
 
+const DEFAULT_LIMIT = 100
+const MAX_LIMIT = 500
+
 type (
 	Pagination struct {
 		Key   *string `json:"key"`
@@ -27,13 +30,19 @@ type (
 	}
 )
 
-func (p Pagination) QueryParameter() (map[string]types.AttributeValue, *int32) {
-	var limit *int32 = aws.Int32(100)
-	lek, _ := lastevaluatedkey.Decode(p.Key)
-	if p.Limit != nil {
-		limit = aws.Int32(int32(*p.Limit))
+func (p Pagination) LimitCount() *int32 {
+	if p.Limit == nil {
+		return aws.Int32(100)
 	}
-	return lek, limit
+	if *p.Limit > MAX_LIMIT {
+		return aws.Int32(MAX_LIMIT)
+	}
+	return aws.Int32(int32(*p.Limit))
+}
+
+func (p Pagination) ExclusiveStartKey() map[string]types.AttributeValue {
+	lek, _ := lastevaluatedkey.Decode(p.Key)
+	return lek
 }
 
 func (w WithPagination) PaginationOrDefault() Pagination {
