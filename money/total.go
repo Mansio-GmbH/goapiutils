@@ -199,6 +199,40 @@ func (t Total) AddTotal(ot *Total) *Total {
 	return nt
 }
 
+func (t *Total) AddIndividually(net *MoneyWithoutVat, gross *MoneyWithoutVat, vat *MoneyWithoutVat, vatByCode map[string]*MoneyWithoutVat) *Total {
+	nt := NewTotal2(t)
+	if _, ok := nt.netTotal[net.CurrencyCode()]; !ok {
+		nt.netTotal[net.CurrencyCode()] = net
+	} else {
+		nt.netTotal[net.CurrencyCode()], _ = nt.netTotal[net.CurrencyCode()].Add(net)
+	}
+	if _, ok := nt.grossTotal[gross.CurrencyCode()]; !ok {
+		nt.grossTotal[gross.CurrencyCode()] = gross
+	} else {
+		nt.grossTotal[gross.CurrencyCode()], _ = nt.grossTotal[gross.CurrencyCode()].Add(gross)
+	}
+	if _, ok := nt.vatTotal[vat.CurrencyCode()]; !ok {
+		nt.vatTotal[vat.CurrencyCode()] = vat
+	} else {
+		nt.vatTotal[vat.CurrencyCode()], _ = nt.vatTotal[vat.CurrencyCode()].Add(vat)
+	}
+
+	for code, vat := range vatByCode {
+		if _, ok := nt.vatByCode[code]; !ok {
+			nt.vatByCode[code] = map[string]*MoneyWithoutVat{
+				vat.CurrencyCode(): vat,
+			}
+		} else {
+			if _, ok := nt.vatByCode[code][vat.CurrencyCode()]; !ok {
+				nt.vatByCode[code][vat.CurrencyCode()] = vat
+			} else {
+				nt.vatByCode[code][vat.CurrencyCode()], _ = nt.vatByCode[code][vat.CurrencyCode()].Add(vat)
+			}
+		}
+	}
+	return nt
+}
+
 func (t Total) Negate() *Total {
 	nt := NewTotal()
 	for currency, money := range t.netTotal {
@@ -219,4 +253,126 @@ func (t Total) Negate() *Total {
 		}
 	}
 	return nt
+}
+
+func (t Total) ForEachCurrency(fn func(currencyCode string, net, gross, vat *MoneyWithoutVat, vatByCode map[string]*MoneyWithoutVat)) {
+	for currency, money := range t.netTotal {
+		vatByCode := map[string]*MoneyWithoutVat{}
+		for vatCode, vatMoney := range t.vatByCode {
+			if _, ok := vatMoney[currency]; ok {
+				vatByCode[vatCode] = vatMoney[currency]
+			}
+		}
+		fn(currency, money, t.grossTotal[currency], t.vatTotal[currency], vatByCode)
+	}
+}
+
+func (t Total) CurrencyCodes() []string {
+	return pie.Keys(t.netTotal)
+}
+
+func (t Total) VatCodes() []string {
+	return pie.Keys(t.vatByCode)
+}
+
+func (t Total) Multiply(n int64) *Total {
+	nt := NewTotal()
+	for currency, money := range t.netTotal {
+		nt.netTotal[currency] = money.Multiply(n)
+	}
+	for currency, money := range t.grossTotal {
+		nt.grossTotal[currency] = money.Multiply(n)
+	}
+	for currency, money := range t.vatTotal {
+		nt.vatTotal[currency] = money.Multiply(n)
+	}
+	for vatCode, moneys := range t.vatByCode {
+		if _, found := nt.vatByCode[vatCode]; !found {
+			nt.vatByCode[vatCode] = map[string]*MoneyWithoutVat{}
+		}
+		for currency, money := range moneys {
+			nt.vatByCode[vatCode][currency] = money.Multiply(n)
+		}
+	}
+	return nt
+}
+
+func (t Total) MultiplyByFloat(x float64) *Total {
+	nt := NewTotal()
+	for currency, money := range t.netTotal {
+		nt.netTotal[currency] = money.MultiplyByFloat(x)
+	}
+	for currency, money := range t.grossTotal {
+		nt.grossTotal[currency] = money.MultiplyByFloat(x)
+	}
+	for currency, money := range t.vatTotal {
+		nt.vatTotal[currency] = money.MultiplyByFloat(x)
+	}
+	for vatCode, moneys := range t.vatByCode {
+		if _, found := nt.vatByCode[vatCode]; !found {
+			nt.vatByCode[vatCode] = map[string]*MoneyWithoutVat{}
+		}
+		for currency, money := range moneys {
+			nt.vatByCode[vatCode][currency] = money.MultiplyByFloat(x)
+		}
+	}
+	return nt
+}
+
+func (t Total) Percentage(perc float64) *Total {
+	return t.MultiplyByFloat(perc / 100.0)
+}
+
+func (t Total) Equals(ot *Total) bool {
+	for currency, money := range t.netTotal {
+		if omoney, found := ot.netTotal[currency]; !found || !must.Must(money.Equals(omoney)) {
+			return false
+		}
+	}
+	for currency, money := range ot.netTotal {
+		if omoney, found := t.netTotal[currency]; !found || !must.Must(money.Equals(omoney)) {
+			return false
+		}
+	}
+	for currency, money := range t.grossTotal {
+		if omoney, found := ot.grossTotal[currency]; !found || !must.Must(money.Equals(omoney)) {
+			return false
+		}
+	}
+	for currency, money := range ot.grossTotal {
+		if omoney, found := t.grossTotal[currency]; !found || !must.Must(money.Equals(omoney)) {
+			return false
+		}
+	}
+	for currency, money := range t.vatTotal {
+		if omoney, found := ot.vatTotal[currency]; !found || !must.Must(money.Equals(omoney)) {
+			return false
+		}
+	}
+	for currency, money := range ot.vatTotal {
+		if omoney, found := t.vatTotal[currency]; !found || !must.Must(money.Equals(omoney)) {
+			return false
+		}
+	}
+	for vatCode, moneys := range t.vatByCode {
+		if _, found := ot.vatByCode[vatCode]; !found {
+			return false
+		}
+		for currency, money := range moneys {
+			if omoney, found := ot.vatByCode[vatCode][currency]; !found || !must.Must(money.Equals(omoney)) {
+				return false
+			}
+		}
+	}
+	for vatCode, moneys := range ot.vatByCode {
+		if _, found := t.vatByCode[vatCode]; !found {
+			return false
+		}
+		for currency, money := range moneys {
+			if omoney, found := t.vatByCode[vatCode][currency]; !found || !must.Must(money.Equals(omoney)) {
+				return false
+			}
+		}
+	}
+	return true
 }

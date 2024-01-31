@@ -62,6 +62,34 @@ func (m *MoneyWithoutVat) IsZero() bool {
 	return m.money.IsZero()
 }
 
+func (m *MoneyWithoutVat) IsPositive() bool {
+	return m.money.IsPositive()
+}
+
+func (m *MoneyWithoutVat) IsNegative() bool {
+	return m.money.IsNegative()
+}
+
+func (m *MoneyWithoutVat) LessThan(om *MoneyWithoutVat) (bool, error) {
+	return m.money.LessThan(&om.money)
+}
+
+func (m *MoneyWithoutVat) LessThanOrEqual(om *MoneyWithoutVat) (bool, error) {
+	return m.money.LessThanOrEqual(&om.money)
+}
+
+func (m *MoneyWithoutVat) GreaterThan(om *MoneyWithoutVat) (bool, error) {
+	return m.money.GreaterThan(&om.money)
+}
+
+func (m *MoneyWithoutVat) GreaterThanOrEqual(om *MoneyWithoutVat) (bool, error) {
+	return m.money.GreaterThanOrEqual(&om.money)
+}
+
+func (m *MoneyWithoutVat) Negate() *MoneyWithoutVat {
+	return NewWithoutVat(-m.Amount(), m.CurrencyCode())
+}
+
 func (m *MoneyWithoutVat) Display() string {
 	return m.money.Display()
 }
