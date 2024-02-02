@@ -90,6 +90,14 @@ func (m *MoneyWithoutVat) Negate() *MoneyWithoutVat {
 	return NewWithoutVat(-m.Amount(), m.CurrencyCode())
 }
 
+func (m *MoneyWithoutVat) Negative() *MoneyWithoutVat {
+	return NewWithoutVat(m.money.Negative().Amount(), m.CurrencyCode())
+}
+
+func (m *MoneyWithoutVat) Absolute() *MoneyWithoutVat {
+	return NewWithoutVat(m.money.Absolute().Amount(), m.CurrencyCode())
+}
+
 func (m *MoneyWithoutVat) Display() string {
 	return m.money.Display()
 }
