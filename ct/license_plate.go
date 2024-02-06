@@ -1,4 +1,4 @@
-package licenseplate
+package ct
 
 import (
 	"encoding/json"
@@ -6,14 +6,16 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/elliotchance/pie/v2"
+	"github.com/mansio-gmbh/goapiutils/stringnormalisation"
 )
 
 type LicensePlate struct {
-	LicensePlate []string `json:"licensePlate"`
+	licensePlateSegments []string
 }
 
 func (lp LicensePlate) MarshalJSON() ([]byte, error) {
-	str := strings.Join(lp.LicensePlate, "-")
+	str := strings.Join(lp.licensePlateSegments, "-")
 	return json.Marshal(str)
 }
 
@@ -23,7 +25,7 @@ func (lp *LicensePlate) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	lp.LicensePlate = strings.FieldsFunc(str, func(r rune) bool {
+	lp.licensePlateSegments = strings.FieldsFunc(str, func(r rune) bool {
 		return r == '-' || r == ' '
 	})
 	return nil
@@ -34,12 +36,22 @@ func (lp *LicensePlate) UnmarshalDynamoDBAttributeValue(v types.AttributeValue) 
 	if err := attributevalue.Unmarshal(v, &str); err != nil {
 		return err
 	}
-	lp.LicensePlate = strings.FieldsFunc(str, func(r rune) bool {
+	lp.licensePlateSegments = strings.FieldsFunc(str, func(r rune) bool {
 		return r == '-' || r == ' '
 	})
 	return nil
 }
 
 func (lp LicensePlate) MarshalDynamoDBAttributeValue() (types.AttributeValue, error) {
-	return attributevalue.Marshal(lp.LicensePlate)
+	return attributevalue.Marshal(lp.String())
+}
+
+func (lp LicensePlate) String() string {
+	return strings.Join(pie.Map(lp.licensePlateSegments, func(segment string) string {
+		return strings.ToUpper(stringnormalisation.NormaliseWithoutLengthCheck(segment))
+	}), "-")
+}
+
+func NewLicensePlate(segments ...string) LicensePlate {
+	return LicensePlate{licensePlateSegments: segments}
 }

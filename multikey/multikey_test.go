@@ -6,6 +6,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/mansio-gmbh/goapiutils/ct"
 	"github.com/mansio-gmbh/goapiutils/multikey"
 	"github.com/mansio-gmbh/goapiutils/must"
 	"github.com/mansio-gmbh/goapiutils/network"
@@ -65,8 +66,13 @@ func TestKey(t *testing.T) {
 			},
 			expected: "2023-10-26",
 		},
+		{
+			parts: []any{
+				ct.NewLicensePlate("K", "AM", "123"),
+			},
+			expected: "K-AM-123",
+		},
 	}
-
 	for _, test := range testcases {
 		key := *multikey.Key(test.parts[0], test.parts[1:]...)
 		require.Equal(t, test.expected, key)
