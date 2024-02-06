@@ -3,6 +3,7 @@ package licenseplate_test
 import (
 	"testing"
 
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/mansio-gmbh/goapiutils/licenseplate"
 )
 
@@ -36,7 +37,7 @@ func TestLicensePlate_MarshalDynamoDBAttributeValue(t *testing.T) {
 
 func TestLicensePlate_UnmarshalDynamoDBAttributeValue(t *testing.T) {
 	lp := &licenseplate.LicensePlate{}
-	err := lp.UnmarshalDynamoDBAttributeValue(nil)
+	err := lp.UnmarshalDynamoDBAttributeValue(&types.AttributeValueMemberS{Value: "ABC-123"})
 	if err != nil {
 		t.Errorf("Failed to unmarshal LicensePlate: %v", err)
 	}
