@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/mansio-gmbh/goapiutils/chrono"
+	"github.com/mansio-gmbh/goapiutils/ct"
 	"github.com/mansio-gmbh/goapiutils/must"
 	"github.com/mansio-gmbh/goapiutils/network"
 	"github.com/mansio-gmbh/goapiutils/tenant"
@@ -78,6 +79,10 @@ func anyToString(v any) string {
 		return val.String()
 	case ToString:
 		return val.ToString()
+	case ct.LicensePlate:
+		return val.String()
+	case *ct.LicensePlate:
+		return val.String()
 	}
 	log.Fatal("val type not handled")
 	return ""
