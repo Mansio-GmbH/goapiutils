@@ -233,6 +233,30 @@ func TestTotalNegative(t *testing.T) {
 	require.Equal(t, int64(-22600_00), total2.GrossTotalOrZero("JPY").Amount())
 }
 
+func TestTotalIsZero(t *testing.T) {
+	total := money.NewTotal2()
+
+	require.True(t, total.IsZero())
+	require.False(t, total.IsNegative())
+	require.False(t, total.IsPositive())
+}
+
+func TestTotalIsNegative(t *testing.T) {
+	total := money.NewTotal(money.New(-107_00, "EUR", money.VAT_07_00, false))
+
+	require.True(t, total.IsNegative())
+	require.False(t, total.IsPositive())
+	require.False(t, total.IsZero())
+}
+
+func TestTotalIsPositive(t *testing.T) {
+	total := money.NewTotal(money.New(107_00, "EUR", money.VAT_07_00, false))
+
+	require.True(t, total.IsPositive())
+	require.False(t, total.IsNegative())
+	require.False(t, total.IsZero())
+}
+
 func TestTotalAbsolute(t *testing.T) {
 	total := money.NewTotal(
 		money.NewFromGross(-107_00, "EUR", money.VAT_07_00),

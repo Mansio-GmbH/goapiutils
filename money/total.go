@@ -299,6 +299,39 @@ func (t Total) Absolute() *Total {
 	return nt
 }
 
+func (t Total) IsZero() bool {
+	for _, money := range t.netTotal {
+		if !money.IsZero() {
+			return false
+		}
+	}
+	return true
+}
+
+func (t Total) IsNegative() bool {
+	if len(t.netTotal) == 0 {
+		return false
+	}
+	for _, money := range t.netTotal {
+		if !money.IsNegative() {
+			return false
+		}
+	}
+	return true
+}
+
+func (t Total) IsPositive() bool {
+	if len(t.netTotal) == 0 {
+		return false
+	}
+	for _, money := range t.netTotal {
+		if !money.IsPositive() {
+			return false
+		}
+	}
+	return true
+}
+
 func (t Total) ForEachCurrency(fn func(currencyCode string, net, gross, vat *MoneyWithoutVat, vatByCode map[string]*MoneyWithoutVat)) {
 	for currency, money := range t.netTotal {
 		vatByCode := map[string]*MoneyWithoutVat{}
