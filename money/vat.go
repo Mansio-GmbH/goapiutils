@@ -2,7 +2,7 @@ package money
 
 import (
 	"errors"
-	"fmt"
+	"strconv"
 )
 
 type vat struct {
@@ -36,5 +36,5 @@ func VatByCode(code string) (*vat, error) {
 }
 
 func (v vat) Display() string {
-	return fmt.Sprintf("%.2f%%", float64(v.rate))
+	return strconv.FormatFloat(float64(v.rate*100.0)/float64(v.denominator), 'f', -1, 64) + "%"
 }

@@ -21,3 +21,8 @@ func TestVatRateByCode(t *testing.T) {
 	require.Error(t, err)
 	require.Nil(t, vat)
 }
+
+func TestVatDisplay(t *testing.T) {
+	require.Equal(t, "19%", money.VAT_19_00.Display())
+	require.Equal(t, "7%", money.VAT_07_00.Display())
+}
