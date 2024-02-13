@@ -36,5 +36,5 @@ func VatByCode(code string) (*vat, error) {
 }
 
 func (v vat) Display() string {
-	return fmt.Sprintf("%.2f MwSt", float64(v.rate)/float64(v.denominator))
+	return fmt.Sprintf("%.2f%%", float64(v.rate))
 }
