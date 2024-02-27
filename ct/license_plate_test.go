@@ -34,3 +34,8 @@ func TestLicensePlate_MarshalDynamoDBAttributeValue(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, lp, unmarshaledLP)
 }
+
+func TestLicensePlate_Parse(t *testing.T) {
+	lp := ParseLicensePlate("K-AM 123")
+	require.Equal(t, []string{"K", "AM", "123"}, lp.licensePlateSegments)
+}

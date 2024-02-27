@@ -55,3 +55,9 @@ func (lp LicensePlate) String() string {
 func NewLicensePlate(segments ...string) LicensePlate {
 	return LicensePlate{licensePlateSegments: segments}
 }
+
+func ParseLicensePlate(s string) LicensePlate {
+	return LicensePlate{licensePlateSegments: strings.FieldsFunc(s, func(r rune) bool {
+		return r == '-' || r == ' '
+	})}
+}
