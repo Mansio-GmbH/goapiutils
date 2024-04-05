@@ -12,6 +12,7 @@ type S3Mock struct {
 	PutObjectFunc           func(ctx context.Context, params *s3.PutObjectInput, optFns ...func(*s3.Options)) (*s3.PutObjectOutput, error)
 	GetObjectAttributesFunc func(ctx context.Context, params *s3.GetObjectAttributesInput, optFns ...func(*s3.Options)) (*s3.GetObjectAttributesOutput, error)
 	ListObjectsV2Func       func(ctx context.Context, params *s3.ListObjectsV2Input, optFns ...func(*s3.Options)) (*s3.ListObjectsV2Output, error)
+	DeleteObjectFunc        func(ctx context.Context, params *s3.DeleteObjectInput, optFns ...func(*s3.Options)) (*s3.DeleteObjectOutput, error)
 }
 
 func (m S3Mock) GetObject(ctx context.Context, params *s3.GetObjectInput, optFns ...func(*s3.Options)) (*s3.GetObjectOutput, error) {
@@ -40,6 +41,13 @@ func (m S3Mock) ListObjectsV2(ctx context.Context, params *s3.ListObjectsV2Input
 		return m.ListObjectsV2Func(ctx, params, optFns...)
 	}
 	return &s3.ListObjectsV2Output{}, nil
+}
+
+func (m S3Mock) DeleteObject(ctx context.Context, params *s3.DeleteObjectInput, optFns ...func(*s3.Options)) (*s3.DeleteObjectOutput, error) {
+	if m.DeleteObjectFunc != nil {
+		return m.DeleteObjectFunc(ctx, params, optFns...)
+	}
+	return &s3.DeleteObjectOutput{}, nil
 }
 
 type PresignedS3Mock struct {
