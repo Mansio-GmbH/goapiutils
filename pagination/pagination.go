@@ -1,9 +1,13 @@
 package pagination
 
 import (
+	"encoding/json"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/elliotchance/pie/v2"
 	"github.com/mansio-gmbh/goapiutils/lastevaluatedkey"
+	"github.com/mansio-gmbh/goapiutils/must"
 )
 
 const DEFAULT_LIMIT = 100
@@ -52,5 +56,43 @@ func (w WithPagination) PaginationOrDefault() Pagination {
 		}
 	}
 	return *w.Pagination
+}
 
+func FilteredPaginatedResponse[T any](items []*T, lastEvaluatedKey map[string]types.AttributeValue, selectedFields []string) (PaginatedResponseTyped[*T], error) {
+	objectsToFilter := make([]any, 0, len(items))
+	must.WithoutError(json.Unmarshal(must.Must(json.Marshal(items)), &objectsToFilter))
+	filterSlice(selectedFields, &objectsToFilter, "items")
+	filteredItems := make([]*T, 0, len(objectsToFilter))
+	must.WithoutError(json.Unmarshal(must.Must(json.Marshal(objectsToFilter)), &filteredItems))
+
+	return PaginatedResponseTyped[*T]{
+		Items:            filteredItems,
+		LastEvaluatedKey: must.Must(lastevaluatedkey.Encode(lastEvaluatedKey)),
+	}, nil
+}
+
+func filterMap(keys []string, data *map[string]any, prefix string) {
+	for key, value := range *data {
+		if !pie.Contains(keys, prefix+"/"+key) {
+			delete(*data, key)
+		} else {
+			switch v := value.(type) {
+			case map[string]any:
+				filterMap(keys, &v, prefix+"/"+key)
+			case []any:
+				filterSlice(keys, &v, prefix+"/"+key)
+			}
+		}
+	}
+}
+
+func filterSlice(keys []string, data *[]any, prefix string) {
+	for i := 0; i < len(*data); i++ {
+		switch v := (*data)[i].(type) {
+		case map[string]any:
+			filterMap(keys, &v, prefix)
+		case []any:
+			filterSlice(keys, &v, prefix)
+		}
+	}
 }
