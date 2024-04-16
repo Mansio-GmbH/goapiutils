@@ -51,6 +51,13 @@ func (m S3Mock) DeleteObject(ctx context.Context, params *s3.DeleteObjectInput, 
 	return &s3.DeleteObjectOutput{}, nil
 }
 
+func (m S3Mock) CopyObject(ctx context.Context, params *s3.CopyObjectInput, optFns ...func(*s3.Options)) (*s3.CopyObjectOutput, error) {
+	if m.DeleteObjectFunc != nil {
+		return m.CopyObjectFunc(ctx, params, optFns...)
+	}
+	return &s3.CopyObjectOutput{}, nil
+}
+
 type PresignedS3Mock struct {
 	PresignGetObjectFunc func(ctx context.Context, params *s3.GetObjectInput, optFns ...func(*s3.PresignOptions)) (*v4.PresignedHTTPRequest, error)
 	PresignPutObjectFunc func(ctx context.Context, params *s3.PutObjectInput, optFns ...func(*s3.PresignOptions)) (*v4.PresignedHTTPRequest, error)
