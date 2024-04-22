@@ -42,6 +42,7 @@ func TestMarshalDynamoDB(t *testing.T) {
 	require.True(t, must.Must(m.Equals(m2)))
 }
 
+/*
 func TestMarshalFromAnyMap(t *testing.T) {
 	m := money.NewFromNet(100_00, "EUR", money.VAT_19_00)
 	mAsAnyMap, err := m.ToAnyMap()
@@ -103,3 +104,4 @@ func TestFromAny(t *testing.T) {
 	_, _, err = money.FromAny(make(map[string]any))
 	require.Error(t, err)
 }
+*/

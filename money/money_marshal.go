@@ -2,7 +2,6 @@ package money
 
 import (
 	"encoding/json"
-	"errors"
 
 	"github.com/Rhymond/go-money"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -144,73 +143,4 @@ func init() {
 		*m = *money.NewFromFloat(mm.Amount, mm.CurrenyCode)
 		return nil
 	}
-}
-
-func (m *Money) ToAnyMap() (map[string]any, error) {
-	asJson, err := json.Marshal(m)
-	if err != nil {
-		return nil, err
-	}
-	val := make(map[string]any)
-	err = json.Unmarshal(asJson, &val)
-	if err != nil {
-		return nil, err
-	}
-	return val, nil
-}
-
-func MoneyFromAnyMap(val map[string]any) (*Money, error) {
-	hasAmount := false
-	hasVatIsGross := false
-	hasCurrencyCode := false
-	hasVatCode := false
-	hasAmountNet := false
-	hasAmountGross := false
-	_, hasAmount = val["amount"]
-	_, hasVatIsGross = val["valueIsGross"]
-	_, hasCurrencyCode = val["currencyCode"]
-	_, hasVatCode = val["vatCode"]
-	_, hasAmountNet = val["amountNet"]
-	_, hasAmountGross = val["amountGross"]
-
-	if !hasVatCode || !hasCurrencyCode || !((hasAmount && hasVatIsGross) || (hasAmountNet || hasAmountGross)) {
-		return nil, errors.New("value is no valid money")
-	}
-
-	asJson, err := json.Marshal(val)
-	if err != nil {
-		return nil, err
-	}
-	m := Money{}
-	err = json.Unmarshal(asJson, &m)
-	if err != nil {
-		return nil, err
-	}
-	return &m, nil
-}
-
-func FromAny(value any) (*Money, *Total, error) {
-	if asMoney, ok := value.(*Money); ok {
-		return asMoney, nil, nil
-	} else if asMoney, ok := value.(Money); ok {
-		return &asMoney, nil, nil
-	} else if asTotal, ok := value.(*Total); ok {
-		return nil, asTotal, nil
-	} else if asTotal, ok := value.(Total); ok {
-		return nil, &asTotal, nil
-	}
-
-	valueAsAnyMap, ok := value.(map[string]any)
-	if !ok {
-		return nil, nil, errors.New("invalid value")
-	}
-	money, _ := MoneyFromAnyMap(valueAsAnyMap)
-	if money != nil {
-		return money, nil, nil
-	}
-	total, _ := TotalFromAnyMap(valueAsAnyMap)
-	if total != nil {
-		return nil, total, nil
-	}
-	return nil, nil, errors.New("no money value")
 }

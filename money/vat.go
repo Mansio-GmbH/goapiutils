@@ -38,3 +38,7 @@ func VatByCode(code string) (*vat, error) {
 func (v vat) Display() string {
 	return strconv.FormatFloat(float64(v.rate*100.0)/float64(v.denominator), 'f', -1, 64) + "%"
 }
+
+func (v vat) Multiplier() float64 {
+	return float64(v.rate) / float64(v.denominator)
+}

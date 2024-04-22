@@ -5,19 +5,16 @@ import (
 	"github.com/mansio-gmbh/goapiutils/must"
 )
 
+type vatcode = string
+type currencycode = string
+
 type Total struct {
-	netTotal   map[string]*MoneyWithoutVat
-	grossTotal map[string]*MoneyWithoutVat
-	vatTotal   map[string]*MoneyWithoutVat
-	vatByCode  map[string]map[string]*MoneyWithoutVat
+	net map[currencycode]map[vatcode]*MoneyWithoutVat
 }
 
 func NewTotal(initialValues ...*Money) *Total {
 	t := &Total{
-		netTotal:   make(map[string]*MoneyWithoutVat),
-		grossTotal: make(map[string]*MoneyWithoutVat),
-		vatTotal:   make(map[string]*MoneyWithoutVat),
-		vatByCode:  make(map[string]map[string]*MoneyWithoutVat),
+		net: make(map[currencycode]map[vatcode]*MoneyWithoutVat),
 	}
 	for _, m := range initialValues {
 		t.Add(m)
@@ -27,10 +24,7 @@ func NewTotal(initialValues ...*Money) *Total {
 
 func NewTotal2(initialValues ...*Total) *Total {
 	t := &Total{
-		netTotal:   make(map[string]*MoneyWithoutVat),
-		grossTotal: make(map[string]*MoneyWithoutVat),
-		vatTotal:   make(map[string]*MoneyWithoutVat),
-		vatByCode:  make(map[string]map[string]*MoneyWithoutVat),
+		net: make(map[currencycode]map[vatcode]*MoneyWithoutVat),
 	}
 	for _, m := range initialValues {
 		t = t.AddTotal(m)
@@ -41,103 +35,117 @@ func NewTotal2(initialValues ...*Total) *Total {
 func (t *Total) Add(m *Money) {
 	currencyCode := m.Currency()
 	vatCode := m.VAT()
-	if _, found := t.netTotal[currencyCode]; !found {
-		t.netTotal[currencyCode] = NewWithoutVat(0, currencyCode)
+	if _, found := t.net[currencyCode]; !found {
+		t.net[currencyCode] = make(map[vatcode]*MoneyWithoutVat)
 	}
-	if _, found := t.grossTotal[currencyCode]; !found {
-		t.grossTotal[currencyCode] = NewWithoutVat(0, currencyCode)
-	}
-	if _, found := t.vatTotal[currencyCode]; !found {
-		t.vatTotal[currencyCode] = NewWithoutVat(0, currencyCode)
-	}
-	if _, found := t.vatByCode[vatCode]; !found {
-		t.vatByCode[vatCode] = make(map[string]*MoneyWithoutVat)
-	}
-	if _, found := t.vatByCode[vatCode][currencyCode]; !found {
-		t.vatByCode[vatCode][currencyCode] = NewWithoutVat(0, currencyCode)
+	if _, found := t.net[currencyCode][vatCode]; !found {
+		t.net[currencyCode][vatCode] = NewWithoutVat(0, currencyCode)
 	}
 
-	t.netTotal[currencyCode] = must.Must(t.netTotal[currencyCode].Add(NewWithoutVatFromMoney(m.netMoney)))
-	t.grossTotal[currencyCode] = must.Must(t.grossTotal[currencyCode].Add(NewWithoutVatFromMoney(m.grossMoney)))
-	t.vatTotal[currencyCode] = must.Must(t.vatTotal[currencyCode].Add(m.VATIncluded()))
-	t.vatByCode[vatCode][currencyCode] = must.Must(t.vatByCode[vatCode][currencyCode].Add(m.VATIncluded()))
+	t.net[currencyCode][vatCode] = must.Must(t.net[currencyCode][vatCode].Add(NewWithoutVatFromMoney(m.netMoney)))
 }
 
 func (t Total) NetTotal(currencyCode string) (*MoneyWithoutVat, bool) {
-	money, found := t.netTotal[currencyCode]
-	return money, found
+	if _, found := t.net[currencyCode]; !found {
+		return nil, found
+	}
+	money := NewWithoutVat(0, currencyCode)
+	for _, m := range t.net[currencyCode] {
+		money, _ = money.Add(m)
+	}
+	return money, true
 }
 
 func (t Total) NetTotalOrZero(currencyCode string) *MoneyWithoutVat {
-	if money, found := t.netTotal[currencyCode]; found {
+	if money, found := t.NetTotal(currencyCode); found {
 		return money
 	}
 	return NewWithoutVat(0, currencyCode)
 }
 
 func (t Total) NetTotals() []*MoneyWithoutVat {
-	if len(t.netTotal) == 0 {
-		return []*MoneyWithoutVat{}
+	totals := make([]*MoneyWithoutVat, 0, len(t.net))
+	for currency := range t.net {
+		totals = append(totals, t.NetTotalOrZero(currency))
 	}
-	return pie.Values(t.netTotal)
+	return totals
 }
 
 func (t Total) GrossTotal(currencyCode string) (*MoneyWithoutVat, bool) {
-	money, found := t.grossTotal[currencyCode]
-	return money, found
+	if _, found := t.net[currencyCode]; !found {
+		return nil, found
+	}
+	money := NewWithoutVat(0, currencyCode)
+	for vatCode, m := range t.net[currencyCode] {
+		vat, _ := VatByCode(vatCode)
+		money, _ = money.Add(m.MultiplyByFloat(1.0 + vat.Multiplier()))
+	}
+	return money, true
 }
 
 func (t Total) GrossTotalOrZero(currencyCode string) *MoneyWithoutVat {
-	if money, found := t.grossTotal[currencyCode]; found {
+	if money, found := t.GrossTotal(currencyCode); found {
 		return money
 	}
 	return NewWithoutVat(0, currencyCode)
 }
 
 func (t Total) GrossTotals() []*MoneyWithoutVat {
-	if len(t.grossTotal) == 0 {
-		return []*MoneyWithoutVat{}
+	totals := make([]*MoneyWithoutVat, 0, len(t.net))
+	for currency := range t.net {
+		totals = append(totals, t.GrossTotalOrZero(currency))
 	}
-	return pie.Values(t.grossTotal)
+	return totals
 }
 
 func (t Total) VatTotal(currencyCode string) (*MoneyWithoutVat, bool) {
-	money, found := t.vatTotal[currencyCode]
-	return money, found
+	if _, found := t.net[currencyCode]; !found {
+		return nil, found
+	}
+	total := NewWithoutVat(0, currencyCode)
+	for vatCode, m := range t.net[currencyCode] {
+		vat := must.Must(VatByCode(vatCode))
+		total, _ = total.Add(m.MultiplyByFloat(vat.Multiplier()))
+	}
+	return total, true
 }
 
 func (t Total) VatTotalOrZero(currencyCode string) *MoneyWithoutVat {
-	if money, found := t.vatTotal[currencyCode]; found {
+	if money, found := t.VatTotal(currencyCode); found {
 		return money
 	}
 	return NewWithoutVat(0, currencyCode)
 }
 
 func (t Total) VatTotals() []*MoneyWithoutVat {
-	if len(t.vatTotal) == 0 {
-		return []*MoneyWithoutVat{}
+	totals := make([]*MoneyWithoutVat, 0, len(t.net))
+	for currency := range t.net {
+		totals = append(totals, t.VatTotalOrZero(currency))
 	}
-	return pie.Values(t.vatTotal)
+	return totals
 }
 
 func (t Total) VatTotalsByCode(vatCode string) ([]*MoneyWithoutVat, bool) {
-	moneys, found := t.vatByCode[vatCode]
-	if !found {
-		return nil, false
+	vats := make([]*MoneyWithoutVat, 0, len(t.net))
+	for _, moneys := range t.net {
+		if money, found := moneys[vatCode]; found {
+			vats = append(vats, money)
+		}
 	}
-	return pie.Values(moneys), true
+	return vats, len(vats) > 0
 }
 
 func (t Total) VatTotalByCode(currencyCode, vatCode string) (*MoneyWithoutVat, bool) {
-	moneys, found := t.vatByCode[vatCode]
+	moneys, found := t.net[currencyCode]
 	if !found {
 		return nil, false
 	}
-	money, found := moneys[currencyCode]
+	money, found := moneys[vatCode]
 	if !found {
 		return nil, false
 	}
-	return money, true
+	vat := must.Must(VatByCode(vatCode))
+	return money.MultiplyByFloat(vat.Multiplier()), true
 }
 
 func (t Total) VatTotalByCodeOrZero(currencyCode, vatCode string) *MoneyWithoutVat {
@@ -149,85 +157,26 @@ func (t Total) VatTotalByCodeOrZero(currencyCode, vatCode string) *MoneyWithoutV
 
 func (t Total) AddTotal(ot *Total) *Total {
 	nt := NewTotal()
-	for currency, money := range t.netTotal {
-		nt.netTotal[currency], _ = money.Add(ot.netTotal[currency])
-	}
-	for currency, money := range ot.netTotal {
-		nt.netTotal[currency], _ = money.Add(t.netTotal[currency])
-	}
-	for currency, money := range t.grossTotal {
-		nt.grossTotal[currency], _ = money.Add(ot.grossTotal[currency])
-	}
-	for currency, money := range ot.grossTotal {
-		nt.grossTotal[currency], _ = money.Add(t.grossTotal[currency])
-	}
-	for currency, money := range t.vatTotal {
-		nt.vatTotal[currency], _ = money.Add(ot.vatTotal[currency])
-	}
-	for currency, money := range ot.vatTotal {
-		nt.vatTotal[currency], _ = money.Add(t.vatTotal[currency])
-	}
-	for vatCode, moneys := range t.vatByCode {
-		if _, found := nt.vatByCode[vatCode]; !found {
-			nt.vatByCode[vatCode] = map[string]*MoneyWithoutVat{}
+	for currency, moneyByVat := range t.net {
+		if _, found := nt.net[currency]; !found {
+			nt.net[currency] = make(map[vatcode]*MoneyWithoutVat)
 		}
-		for currency, money := range moneys {
-			if _, found := ot.vatByCode[vatCode]; !found {
-				nt.vatByCode[vatCode][currency], _ = money.Add(NewWithoutVat(0, currency))
-			} else if omoney, found := ot.vatByCode[vatCode][currency]; !found {
-				nt.vatByCode[vatCode][currency], _ = money.Add(NewWithoutVat(0, currency))
-			} else {
-				nt.vatByCode[vatCode][currency], _ = money.Add(omoney)
+		for vatCode, money := range moneyByVat {
+			if _, found := ot.net[currency][vatCode]; !found {
+				nt.net[currency][vatCode], _ = money.Add(NewWithoutVat(0, currency))
 			}
+			nt.net[currency][vatCode], _ = money.Add(ot.net[currency][vatCode])
 		}
 	}
-	for vatCode, moneys := range ot.vatByCode {
-		if _, found := nt.vatByCode[vatCode]; !found {
-			nt.vatByCode[vatCode] = map[string]*MoneyWithoutVat{}
+	for currency, moneyByVat := range ot.net {
+		if _, found := nt.net[currency]; !found {
+			nt.net[currency] = make(map[vatcode]*MoneyWithoutVat)
 		}
-		for currency, money := range moneys {
-			if _, found := t.vatByCode[vatCode]; !found {
-				nt.vatByCode[vatCode][currency], _ = money.Add(NewWithoutVat(0, currency))
-			} else if omoney, found := t.vatByCode[vatCode][currency]; !found {
-				nt.vatByCode[vatCode][currency], _ = money.Add(NewWithoutVat(0, currency))
-			} else {
-				nt.vatByCode[vatCode][currency], _ = money.Add(omoney)
+		for vatCode, money := range moneyByVat {
+			if _, found := t.net[currency][vatCode]; !found {
+				nt.net[currency][vatCode], _ = money.Add(NewWithoutVat(0, currency))
 			}
-		}
-	}
-
-	return nt
-}
-
-func (t *Total) AddIndividually(net *MoneyWithoutVat, gross *MoneyWithoutVat, vat *MoneyWithoutVat, vatByCode map[string]*MoneyWithoutVat) *Total {
-	nt := NewTotal2(t)
-	if _, ok := nt.netTotal[net.CurrencyCode()]; !ok {
-		nt.netTotal[net.CurrencyCode()] = net
-	} else {
-		nt.netTotal[net.CurrencyCode()], _ = nt.netTotal[net.CurrencyCode()].Add(net)
-	}
-	if _, ok := nt.grossTotal[gross.CurrencyCode()]; !ok {
-		nt.grossTotal[gross.CurrencyCode()] = gross
-	} else {
-		nt.grossTotal[gross.CurrencyCode()], _ = nt.grossTotal[gross.CurrencyCode()].Add(gross)
-	}
-	if _, ok := nt.vatTotal[vat.CurrencyCode()]; !ok {
-		nt.vatTotal[vat.CurrencyCode()] = vat
-	} else {
-		nt.vatTotal[vat.CurrencyCode()], _ = nt.vatTotal[vat.CurrencyCode()].Add(vat)
-	}
-
-	for code, vat := range vatByCode {
-		if _, ok := nt.vatByCode[code]; !ok {
-			nt.vatByCode[code] = map[string]*MoneyWithoutVat{
-				vat.CurrencyCode(): vat,
-			}
-		} else {
-			if _, ok := nt.vatByCode[code][vat.CurrencyCode()]; !ok {
-				nt.vatByCode[code][vat.CurrencyCode()] = vat
-			} else {
-				nt.vatByCode[code][vat.CurrencyCode()], _ = nt.vatByCode[code][vat.CurrencyCode()].Add(vat)
-			}
+			nt.net[currency][vatCode], _ = money.Add(t.net[currency][vatCode])
 		}
 	}
 	return nt
@@ -235,21 +184,12 @@ func (t *Total) AddIndividually(net *MoneyWithoutVat, gross *MoneyWithoutVat, va
 
 func (t Total) Negate() *Total {
 	nt := NewTotal()
-	for currency, money := range t.netTotal {
-		nt.netTotal[currency] = NewWithoutVat(-money.Amount(), currency)
-	}
-	for currency, money := range t.grossTotal {
-		nt.grossTotal[currency] = NewWithoutVat(-money.Amount(), currency)
-	}
-	for currency, money := range t.vatTotal {
-		nt.vatTotal[currency] = NewWithoutVat(-money.Amount(), currency)
-	}
-	for vatCode, moneys := range t.vatByCode {
-		if _, found := nt.vatByCode[vatCode]; !found {
-			nt.vatByCode[vatCode] = map[string]*MoneyWithoutVat{}
+	for currency, moneyByVat := range t.net {
+		if _, found := nt.net[currency]; !found {
+			nt.net[currency] = make(map[vatcode]*MoneyWithoutVat)
 		}
-		for currency, money := range moneys {
-			nt.vatByCode[vatCode][currency] = NewWithoutVat(-money.Amount(), currency)
+		for vatCode, money := range moneyByVat {
+			nt.net[currency][vatCode] = NewWithoutVat(-money.Amount(), currency)
 		}
 	}
 	return nt
@@ -257,21 +197,12 @@ func (t Total) Negate() *Total {
 
 func (t Total) Negative() *Total {
 	nt := NewTotal()
-	for currency, money := range t.netTotal {
-		nt.netTotal[currency] = NewWithoutVat(money.Negative().Amount(), currency)
-	}
-	for currency, money := range t.grossTotal {
-		nt.grossTotal[currency] = NewWithoutVat(money.Negative().Amount(), currency)
-	}
-	for currency, money := range t.vatTotal {
-		nt.vatTotal[currency] = NewWithoutVat(money.Negative().Amount(), currency)
-	}
-	for vatCode, moneys := range t.vatByCode {
-		if _, found := nt.vatByCode[vatCode]; !found {
-			nt.vatByCode[vatCode] = map[string]*MoneyWithoutVat{}
+	for currency, moneyByVat := range t.net {
+		if _, found := nt.net[currency]; !found {
+			nt.net[currency] = make(map[vatcode]*MoneyWithoutVat)
 		}
-		for currency, money := range moneys {
-			nt.vatByCode[vatCode][currency] = NewWithoutVat(money.Negative().Amount(), currency)
+		for vatCode, money := range moneyByVat {
+			nt.net[currency][vatCode] = NewWithoutVat(money.Negative().Amount(), currency)
 		}
 	}
 	return nt
@@ -279,96 +210,76 @@ func (t Total) Negative() *Total {
 
 func (t Total) Absolute() *Total {
 	nt := NewTotal()
-	for currency, money := range t.netTotal {
-		nt.netTotal[currency] = NewWithoutVat(money.Absolute().Amount(), currency)
-	}
-	for currency, money := range t.grossTotal {
-		nt.grossTotal[currency] = NewWithoutVat(money.Absolute().Amount(), currency)
-	}
-	for currency, money := range t.vatTotal {
-		nt.vatTotal[currency] = NewWithoutVat(money.Absolute().Amount(), currency)
-	}
-	for vatCode, moneys := range t.vatByCode {
-		if _, found := nt.vatByCode[vatCode]; !found {
-			nt.vatByCode[vatCode] = map[string]*MoneyWithoutVat{}
+	for currency, moneyByVat := range t.net {
+		if _, found := nt.net[currency]; !found {
+			nt.net[currency] = make(map[vatcode]*MoneyWithoutVat)
 		}
-		for currency, money := range moneys {
-			nt.vatByCode[vatCode][currency] = NewWithoutVat(money.Absolute().Amount(), currency)
+		for vatCode, money := range moneyByVat {
+			nt.net[currency][vatCode] = NewWithoutVat(money.Absolute().Amount(), currency)
 		}
 	}
 	return nt
 }
 
 func (t Total) IsZero() bool {
-	for _, money := range t.netTotal {
-		if !money.IsZero() {
-			return false
+	for _, moneyByVat := range t.net {
+		for _, money := range moneyByVat {
+			if !money.IsZero() {
+				return false
+			}
 		}
 	}
 	return true
 }
 
 func (t Total) IsNegative() bool {
-	if len(t.netTotal) == 0 {
+	if len(t.net) == 0 {
 		return false
 	}
-	for _, money := range t.netTotal {
-		if !money.IsNegative() {
-			return false
+	for _, moneyByVat := range t.net {
+		for _, money := range moneyByVat {
+			if !money.IsNegative() {
+				return false
+			}
 		}
 	}
 	return true
 }
 
 func (t Total) IsPositive() bool {
-	if len(t.netTotal) == 0 {
+	if len(t.net) == 0 {
 		return false
 	}
-	for _, money := range t.netTotal {
-		if !money.IsPositive() {
-			return false
+	for _, moneyByVat := range t.net {
+		for _, money := range moneyByVat {
+			if !money.IsPositive() {
+				return false
+			}
 		}
 	}
 	return true
 }
 
-func (t Total) ForEachCurrency(fn func(currencyCode string, net, gross, vat *MoneyWithoutVat, vatByCode map[string]*MoneyWithoutVat)) {
-	for currency, money := range t.netTotal {
-		vatByCode := map[string]*MoneyWithoutVat{}
-		for vatCode, vatMoney := range t.vatByCode {
-			if _, ok := vatMoney[currency]; ok {
-				vatByCode[vatCode] = vatMoney[currency]
-			}
-		}
-		fn(currency, money, t.grossTotal[currency], t.vatTotal[currency], vatByCode)
-	}
-}
-
 func (t Total) CurrencyCodes() []string {
-	return pie.Keys(t.netTotal)
+	return pie.Keys(t.net)
 }
 
 func (t Total) VatCodes() []string {
-	return pie.Keys(t.vatByCode)
+	vatCodes := make([]string, 0)
+	for _, moneys := range t.net {
+		vatCodes = append(vatCodes, pie.Keys(moneys)...)
+	}
+	return pie.Unique(vatCodes)
 }
 
 func (t Total) Multiply(n int64) *Total {
 	nt := NewTotal()
-	for currency, money := range t.netTotal {
-		nt.netTotal[currency] = money.Multiply(n)
-	}
-	for currency, money := range t.grossTotal {
-		nt.grossTotal[currency] = money.Multiply(n)
-	}
-	for currency, money := range t.vatTotal {
-		nt.vatTotal[currency] = money.Multiply(n)
-	}
-	for vatCode, moneys := range t.vatByCode {
-		if _, found := nt.vatByCode[vatCode]; !found {
-			nt.vatByCode[vatCode] = map[string]*MoneyWithoutVat{}
+	for currency, moneyByVat := range t.net {
+		if _, found := nt.net[currency]; !found {
+			nt.net[currency] = make(map[vatcode]*MoneyWithoutVat)
 		}
-		for currency, money := range moneys {
-			nt.vatByCode[vatCode][currency] = money.Multiply(n)
+		for vatCode, money := range moneyByVat {
+			nt.net[currency][vatCode] = money.Multiply(n)
 		}
 	}
 	return nt
@@ -376,21 +287,12 @@ func (t Total) Multiply(n int64) *Total {
 
 func (t Total) MultiplyByFloat(x float64) *Total {
 	nt := NewTotal()
-	for currency, money := range t.netTotal {
-		nt.netTotal[currency] = money.MultiplyByFloat(x)
-	}
-	for currency, money := range t.grossTotal {
-		nt.grossTotal[currency] = money.MultiplyByFloat(x)
-	}
-	for currency, money := range t.vatTotal {
-		nt.vatTotal[currency] = money.MultiplyByFloat(x)
-	}
-	for vatCode, moneys := range t.vatByCode {
-		if _, found := nt.vatByCode[vatCode]; !found {
-			nt.vatByCode[vatCode] = map[string]*MoneyWithoutVat{}
+	for currency, moneyByVat := range t.net {
+		if _, found := nt.net[currency]; !found {
+			nt.net[currency] = make(map[vatcode]*MoneyWithoutVat)
 		}
-		for currency, money := range moneys {
-			nt.vatByCode[vatCode][currency] = money.MultiplyByFloat(x)
+		for vatCode, money := range moneyByVat {
+			nt.net[currency][vatCode] = money.MultiplyByFloat(x)
 		}
 	}
 	return nt
@@ -401,55 +303,39 @@ func (t Total) Percentage(perc float64) *Total {
 }
 
 func (t Total) Equals(ot *Total) bool {
-	for currency, money := range t.netTotal {
-		if omoney, found := ot.netTotal[currency]; !found || !must.Must(money.Equals(omoney)) {
-			return false
-		}
-	}
-	for currency, money := range ot.netTotal {
-		if omoney, found := t.netTotal[currency]; !found || !must.Must(money.Equals(omoney)) {
-			return false
-		}
-	}
-	for currency, money := range t.grossTotal {
-		if omoney, found := ot.grossTotal[currency]; !found || !must.Must(money.Equals(omoney)) {
-			return false
-		}
-	}
-	for currency, money := range ot.grossTotal {
-		if omoney, found := t.grossTotal[currency]; !found || !must.Must(money.Equals(omoney)) {
-			return false
-		}
-	}
-	for currency, money := range t.vatTotal {
-		if omoney, found := ot.vatTotal[currency]; !found || !must.Must(money.Equals(omoney)) {
-			return false
-		}
-	}
-	for currency, money := range ot.vatTotal {
-		if omoney, found := t.vatTotal[currency]; !found || !must.Must(money.Equals(omoney)) {
-			return false
-		}
-	}
-	for vatCode, moneys := range t.vatByCode {
-		if _, found := ot.vatByCode[vatCode]; !found {
-			return false
-		}
-		for currency, money := range moneys {
-			if omoney, found := ot.vatByCode[vatCode][currency]; !found || !must.Must(money.Equals(omoney)) {
+
+	isZero := func(moneys map[vatcode]*MoneyWithoutVat) bool {
+		for _, money := range moneys {
+			if !money.IsZero() {
 				return false
 			}
 		}
+		return true
 	}
-	for vatCode, moneys := range ot.vatByCode {
-		if _, found := t.vatByCode[vatCode]; !found {
+
+	for currency, moneyByVat := range t.net {
+		if otMoneyByVat, found := ot.net[currency]; !found && !isZero(moneyByVat) {
 			return false
-		}
-		for currency, money := range moneys {
-			if omoney, found := t.vatByCode[vatCode][currency]; !found || !must.Must(money.Equals(omoney)) {
-				return false
+		} else {
+			for vatCode, money := range moneyByVat {
+				if omoney, found := otMoneyByVat[vatCode]; !found || !must.Must(money.Equals(omoney)) {
+					return false
+				}
 			}
 		}
 	}
+
+	for currency, moneyByVat := range ot.net {
+		if tMoneyByVat, found := t.net[currency]; !found && !isZero(moneyByVat) {
+			return false
+		} else {
+			for vatCode, money := range moneyByVat {
+				if omoney, found := tMoneyByVat[vatCode]; !found || !must.Must(money.Equals(omoney)) {
+					return false
+				}
+			}
+		}
+	}
+
 	return true
 }

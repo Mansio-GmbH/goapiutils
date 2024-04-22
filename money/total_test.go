@@ -144,58 +144,6 @@ func TestTotalAddTotal(t *testing.T) {
 	require.True(t, must.Must(vat_00_00.Equals(money.NewWithoutVat(0_00, "JPY"))))
 }
 
-func TestTotalAddIndividually(t *testing.T) {
-	total1 := money.NewTotal(
-		money.NewFromGross(107_00, "EUR", money.VAT_07_00),
-		money.NewFromGross(100_00, "USD", money.VAT_00_00),
-		money.NewFromNet(10000_00, "JPY", money.VAT_19_00),
-		money.NewFromNet(10000_00, "JPY", money.VAT_07_00),
-	)
-
-	total2 := total1.AddIndividually(money.NewWithoutVat(200_00, "EUR"), money.NewWithoutVat(226_00, "EUR"), money.NewWithoutVat(38_00, "EUR"), map[string]*money.MoneyWithoutVat{
-		"VAT_19_00": money.NewWithoutVat(19, "EUR"),
-		"VAT_07_00": money.NewWithoutVat(7, "EUR"),
-	})
-
-	netTotal, found := total2.NetTotal("EUR")
-	require.True(t, found)
-	require.True(t, must.Must(netTotal.Equals(money.NewWithoutVat(300_00, "EUR"))))
-
-	grossTotal, found := total2.GrossTotal("EUR")
-	require.True(t, found)
-	require.True(t, must.Must(grossTotal.Equals(money.NewWithoutVat(333_00, "EUR"))))
-}
-
-func TestTotalAddIndividually_NewCurrency(t *testing.T) {
-	total1 := money.NewTotal(
-		money.NewFromGross(107_00, "EUR", money.VAT_07_00),
-		money.NewFromGross(100_00, "USD", money.VAT_00_00),
-		money.NewFromNet(10000_00, "JPY", money.VAT_19_00),
-		money.NewFromNet(10000_00, "JPY", money.VAT_07_00),
-	)
-
-	total2 := total1.AddIndividually(money.NewWithoutVat(200_00, "GBP"), money.NewWithoutVat(226_00, "GBP"), money.NewWithoutVat(38_00, "GBP"), map[string]*money.MoneyWithoutVat{
-		"VAT_19_00": money.NewWithoutVat(19, "GBP"),
-		"VAT_07_00": money.NewWithoutVat(7, "GBP"),
-	})
-
-	netTotal, found := total2.NetTotal("GBP")
-	require.True(t, found)
-	require.True(t, must.Must(netTotal.Equals(money.NewWithoutVat(200_00, "GBP"))))
-
-	grossTotal, found := total2.GrossTotal("GBP")
-	require.True(t, found)
-	require.True(t, must.Must(grossTotal.Equals(money.NewWithoutVat(226_00, "GBP"))))
-
-	netTotal, found = total2.NetTotal("EUR")
-	require.True(t, found)
-	require.True(t, must.Must(netTotal.Equals(money.NewWithoutVat(100_00, "EUR"))))
-
-	grossTotal, found = total2.GrossTotal("EUR")
-	require.True(t, found)
-	require.True(t, must.Must(grossTotal.Equals(money.NewWithoutVat(107_00, "EUR"))))
-}
-
 func TestXOrZero(t *testing.T) {
 	total := money.NewTotal2()
 
@@ -269,25 +217,6 @@ func TestTotalAbsolute(t *testing.T) {
 	require.Equal(t, int64(107_00), total2.GrossTotalOrZero("EUR").Amount())
 	require.Equal(t, int64(100_00), total2.GrossTotalOrZero("USD").Amount())
 	require.Equal(t, int64(22600_00), total2.GrossTotalOrZero("JPY").Amount())
-}
-
-func TestTotalForEachCurrency(t *testing.T) {
-	total := money.NewTotal(
-		money.NewFromGross(107_00, "EUR", money.VAT_07_00),
-		money.NewFromGross(100_00, "USD", money.VAT_00_00),
-		money.NewFromNet(10000_00, "JPY", money.VAT_19_00),
-		money.NewFromNet(10000_00, "JPY", money.VAT_07_00),
-	)
-
-	currencies := make(map[string]bool)
-	total.ForEachCurrency(func(currencyCode string, _, _, _ *money.MoneyWithoutVat, _ map[string]*money.MoneyWithoutVat) {
-		currencies[currencyCode] = true
-	})
-
-	require.Equal(t, 3, len(currencies))
-	require.True(t, currencies["EUR"])
-	require.True(t, currencies["USD"])
-	require.True(t, currencies["JPY"])
 }
 
 func TestTotalCurrencyCodes(t *testing.T) {
@@ -396,4 +325,14 @@ func TestTotalEquals_false(t *testing.T) {
 	)
 
 	require.False(t, total1.Equals(total2))
+}
+
+func TestGrossForKnownValue(t *testing.T) {
+	total := money.NewTotal(
+		money.NewFromNet(6227_00, "EUR", money.VAT_19_00),
+	)
+
+	gross, found := total.GrossTotal("EUR")
+	require.True(t, found)
+	require.Equal(t, int64(7410_13), gross.Amount())
 }
