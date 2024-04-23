@@ -27,16 +27,20 @@ func (t *Total) UnmarshalJSON(b []byte) error {
 	return errors.New("not implemented")
 }
 
-type dynamodbTotalMarshal map[string]map[string]int64
+type dynamodbTotalMarshal struct {
+	Net map[string]map[string]int64 `dynamodbav:"net"`
+}
 
 func (t Total) MarshalDynamoDBAttributeValue() (types.AttributeValue, error) {
-	tm := make(dynamodbTotalMarshal)
+	tm := dynamodbTotalMarshal{
+		Net: make(map[string]map[string]int64),
+	}
 	for currency, vatByVatCode := range t.net {
-		if _, found := tm[currency]; !found {
-			tm[currency] = make(map[string]int64)
+		if _, found := tm.Net[currency]; !found {
+			tm.Net[currency] = make(map[string]int64)
 		}
 		for vatCode, money := range vatByVatCode {
-			tm[currency][vatCode] = money.Amount()
+			tm.Net[currency][vatCode] = money.Amount()
 		}
 	}
 
@@ -44,12 +48,12 @@ func (t Total) MarshalDynamoDBAttributeValue() (types.AttributeValue, error) {
 }
 
 func (t *Total) UnmarshalDynamoDBAttributeValue(v types.AttributeValue) error {
-	tm := make(dynamodbTotalMarshal)
+	tm := dynamodbTotalMarshal{}
 	t.net = make(map[string]map[vatcode]*MoneyWithoutVat)
 	if err := attributevalue.Unmarshal(v, &tm); err != nil {
 		return err
 	}
-	for currency, amountByVatCode := range tm {
+	for currency, amountByVatCode := range tm.Net {
 		if _, found := t.net[currency]; !found {
 			t.net[currency] = make(map[vatcode]*MoneyWithoutVat)
 		}
