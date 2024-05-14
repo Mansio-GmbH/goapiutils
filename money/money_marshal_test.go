@@ -14,11 +14,11 @@ func TestMarshalJSON(t *testing.T) {
 	m := money.NewFromNet(100_54, "EUR", money.VAT_19_00)
 	b, err := json.Marshal(m)
 	require.NoError(t, err)
-	require.Equal(t, `{"vatCode":"VAT_19_00","currencyCode":"EUR","amountNet":100.54,"amountGross":119.64,"leadingValueIsGross":false,"displayNet":"€100.54","displayGross":"€119.64"}`, string(b))
+	require.Equal(t, `{"vatCode":"VAT_19_00","currencyCode":"EUR","amountNet":100.54,"amountGross":119.64,"leadingValueIsGross":false,"displayNet":"€100.54","displayGross":"€119.64","amount":100.54,"valueIsGross":false}`, string(b))
 	m = money.NewFromGross(100_54, "EUR", money.VAT_19_00)
 	b, err = json.Marshal(m)
 	require.NoError(t, err)
-	require.Equal(t, `{"vatCode":"VAT_19_00","currencyCode":"EUR","amountNet":84.49,"amountGross":100.54,"leadingValueIsGross":true,"displayNet":"€84.49","displayGross":"€100.54"}`, string(b))
+	require.Equal(t, `{"vatCode":"VAT_19_00","currencyCode":"EUR","amountNet":84.49,"amountGross":100.54,"leadingValueIsGross":true,"displayNet":"€84.49","displayGross":"€100.54","amount":100.54,"valueIsGross":true}`, string(b))
 }
 
 func TestUnmarshalJSON(t *testing.T) {

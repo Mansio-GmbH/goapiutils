@@ -86,7 +86,13 @@ func (m *Money) UnmarshalDynamoDBAttributeValue(v types.AttributeValue) error {
 }
 
 func (m Money) MarshalJSON() ([]byte, error) {
+	leadingAmount := m.AmountNetAsMajorUnits()
+	if m.LeadingValueIsGross {
+		leadingAmount = m.AmountGrossAsMajorUnits()
+	}
 	mm := jsonMarshalMoney{
+		Amount:              &leadingAmount,
+		ValueIsGross:        &m.LeadingValueIsGross,
 		AmountNet:           m.AmountNetAsMajorUnits(),
 		AmountGross:         m.AmountGrossAsMajorUnits(),
 		CurrenyCode:         m.Currency(),
