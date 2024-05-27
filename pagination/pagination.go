@@ -10,8 +10,8 @@ import (
 	"github.com/mansio-gmbh/goapiutils/must"
 )
 
-const DEFAULT_LIMIT = 100
-const MAX_LIMIT = 500
+const DEFAULT_LIMIT = 500
+const MAX_LIMIT = 1000
 
 type (
 	Pagination struct {
@@ -36,7 +36,7 @@ type (
 
 func (p Pagination) LimitCount() *int32 {
 	if p.Limit == nil {
-		return aws.Int32(100)
+		return aws.Int32(DEFAULT_LIMIT)
 	}
 	if *p.Limit > MAX_LIMIT {
 		return aws.Int32(MAX_LIMIT)
@@ -49,10 +49,14 @@ func (p Pagination) ExclusiveStartKey() map[string]types.AttributeValue {
 	return lek
 }
 
-func (w WithPagination) PaginationOrDefault() Pagination {
+func (w WithPagination) PaginationOrDefault(limit ...int) Pagination {
 	if w.Pagination == nil {
+		l := DEFAULT_LIMIT
+		if len(limit) > 0 {
+			l = limit[0]
+		}
 		return Pagination{
-			Limit: aws.Int64(100),
+			Limit: aws.Int64(int64(l)),
 		}
 	}
 	return *w.Pagination
