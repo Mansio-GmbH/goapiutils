@@ -30,6 +30,7 @@ func TestTotalMarshalJSON(t *testing.T) {
 	require.NoError(t, err)
 	jsonStr := string(b)
 	fmt.Println(jsonStr)
+	require.Contains(t, jsonStr, `"nets":[`)
 	require.Contains(t, jsonStr, `"netTotals":[`)
 	require.Contains(t, jsonStr, `{"amount":600,"currencyCode":"EUR","display":"€600.00"}`)
 	require.Contains(t, jsonStr, `{"amount":600,"currencyCode":"USD","display":"$600.00"}`)

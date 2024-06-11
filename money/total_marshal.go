@@ -9,13 +9,22 @@ import (
 )
 
 type jsonTotalMarshal struct {
+	Nets        []*Money           `json:"nets" dynamodbav:"nets"`
 	NetTotals   []*MoneyWithoutVat `json:"netTotals" dynamodbav:"netTotals"`
 	GrossTotals []*MoneyWithoutVat `json:"grossTotals" dynamodbav:"grossTotals"`
 	VatTotals   []*MoneyWithoutVat `json:"vatTotals" dynamodbav:"vatTotals"`
 }
 
 func (t Total) MarshalJSON() ([]byte, error) {
+	nets := make([]*Money, 0)
+	for _, vatByVatCode := range t.net {
+		for vatCode, money := range vatByVatCode {
+			vat, _ := VatByCode(vatCode)
+			nets = append(nets, NewFromNet(money.Amount(), money.CurrencyCode(), vat))
+		}
+	}
 	tm := jsonTotalMarshal{
+		Nets:        nets,
 		NetTotals:   t.NetTotals(),
 		GrossTotals: t.GrossTotals(),
 		VatTotals:   t.VatTotals(),
