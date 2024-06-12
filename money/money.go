@@ -78,6 +78,10 @@ func (m Money) AmountGross() int64 {
 	return m.grossMoney.Amount()
 }
 
+func (m Money) Amount() int64 {
+	return m.calculateWithMoney().Amount()
+}
+
 func (m Money) AmountNet() int64 {
 	return m.netMoney.Amount()
 }
@@ -192,7 +196,7 @@ func (m *Money) MultiplyByFloat(x float64) *Money {
 }
 
 func (m *Money) Percentage(perc float64) *Money {
-	return m.MultiplyByFloat(perc/100.0)
+	return m.MultiplyByFloat(perc / 100.0)
 }
 
 func (m *Money) VATIncluded() *MoneyWithoutVat {

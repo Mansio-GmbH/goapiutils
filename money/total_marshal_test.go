@@ -43,11 +43,11 @@ func TestTotalMarshalJSON(t *testing.T) {
 }
 
 func TestTotalUnmarshalJSON(t *testing.T) {
-	jsonStr := `{"netTotals":[{"amount":600,"currencyCode":"EUR","display":"€600.00"},{"amount":600,"currencyCode":"USD","display":"$600.00"}],"grossTotals":[{"amount":652,"currencyCode":"EUR","display":"€652.00"},{"amount":652,"currencyCode":"USD","display":"$652.00"}],"vatTotals":[{"amount":52,"currencyCode":"EUR","display":"€52.00"},{"amount":52,"currencyCode":"USD","display":"$52.00"}]}`
+	jsonStr := `{"nets":[{"amount":600,"currencyCode":"EUR","valueIsGross":false,"vatCode":"VAT_19_00"},{"amount":600,"currencyCode":"USD","valueIsGross":false,"vatCode":"VAT_19_00"}]}`
 
 	total := &money.Total{}
 	err := json.Unmarshal([]byte(jsonStr), &total)
-	require.Error(t, err)
+	require.NoError(t, err)
 }
 
 func TestTotalMarshalDynamoDB(t *testing.T) {

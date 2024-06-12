@@ -2,7 +2,6 @@ package money
 
 import (
 	"encoding/json"
-	"errors"
 
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
@@ -33,7 +32,18 @@ func (t Total) MarshalJSON() ([]byte, error) {
 }
 
 func (t *Total) UnmarshalJSON(b []byte) error {
-	return errors.New("not implemented")
+	tm := jsonTotalMarshal{}
+	if err := json.Unmarshal(b, &tm); err != nil {
+		return err
+	}
+	t.net = make(map[string]map[vatcode]*MoneyWithoutVat)
+	for _, net := range tm.Nets {
+		if _, found := t.net[net.Currency()]; !found {
+			t.net[net.Currency()] = make(map[vatcode]*MoneyWithoutVat)
+		}
+		t.net[net.Currency()][net.VAT()] = NewWithoutVat(net.Amount(), net.Currency())
+	}
+	return nil
 }
 
 type dynamodbTotalMarshal struct {
