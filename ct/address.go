@@ -4,8 +4,8 @@ type Address struct {
 	Street                 *string  `json:"street,omitempty" dynamodbav:"street,omitempty" `
 	HouseNumber            *string  `json:"houseNumber,omitempty" dynamodbav:"houseNumber,omitempty"`
 	City                   *string  `json:"city,omitempty" dynamodbav:"city,omitempty" `
-	PostalCode             string   `json:"postalCode,omitempty" dynamodbav:"postalCode,omitempty" validate:"required,postcode_iso3166_alpha2_field=CountryCode"`
-	CountryCode            string   `json:"countryCode,omitempty" dynamodbav:"countryCode,omitempty" validate:"required,iso3166_1_alpha2"`
+	PostalCode             string   `json:"postalCode,omitempty" dynamodbav:"postalCode,omitempty"`
+	CountryCode            string   `json:"countryCode,omitempty" dynamodbav:"countryCode,omitempty"`
 	Name                   *string  `json:"name,omitempty" dynamodbav:"name,omitempty"`
 	Name2                  *string  `json:"name2,omitempty" dynamodbav:"name2,omitempty"`
 	Name3                  *string  `json:"name3,omitempty" dynamodbav:"name3,omitempty"`
