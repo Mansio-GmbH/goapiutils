@@ -38,7 +38,9 @@ func New(amount int64, currency string, vat *vat, valueIsGross bool) *Money {
 }
 
 func NewFromFloat(amount float64, currency string, vat *vat, valueIsGross bool) *Money {
-	return newWithMoney(money.NewFromFloat(amount, currency), vat, valueIsGross)
+	currencyDecimals := math.Pow10(money.GetCurrency(currency).Fraction)
+	amountCents := int64(math.Round(amount * currencyDecimals))
+	return New(amountCents, currency, vat, valueIsGross)
 }
 
 func NewFromNet(amount int64, currency string, vat *vat) *Money {

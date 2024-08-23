@@ -42,66 +42,19 @@ func TestMarshalDynamoDB(t *testing.T) {
 	require.True(t, must.Must(m.Equals(m2)))
 }
 
-/*
-func TestMarshalFromAnyMap(t *testing.T) {
-	m := money.NewFromNet(100_00, "EUR", money.VAT_19_00)
-	mAsAnyMap, err := m.ToAnyMap()
+func TestUnmarshalJSONWithStrangeValues(t *testing.T) {
+	data := `{"amount":4545.69,"currencyCode":"EUR","vatCode":"VAT_19_00","valueIsGross":false}`
+	m := money.Money{}
+	err := json.Unmarshal([]byte(data), &m)
 	require.NoError(t, err)
-	require.Equal(t, float64(100), mAsAnyMap["amountNet"])
-	require.Equal(t, float64(119), mAsAnyMap["amountGross"])
-	require.Equal(t, false, mAsAnyMap["leadingValueIsGross"])
+	require.Equal(t, int64(4545_69), m.AmountNet())
+	require.Equal(t, "EUR", m.Currency())
+	require.Equal(t, "VAT_19_00", m.VAT())
 
-	mFromAnyMap, err := money.MoneyFromAnyMap(mAsAnyMap)
+	data = `{"amount":1128.60,"currencyCode":"EUR","vatCode":"VAT_19_00","valueIsGross":false}`
+	err = json.Unmarshal([]byte(data), &m)
 	require.NoError(t, err)
-	require.Equal(t, m.AmountNet(), mFromAnyMap.AmountNet())
-	require.Equal(t, m.AmountGross(), mFromAnyMap.AmountGross())
+	require.Equal(t, int64(112860), m.AmountNet())
+	require.Equal(t, "EUR", m.Currency())
+	require.Equal(t, "VAT_19_00", m.VAT())
 }
-
-func TestFromAny(t *testing.T) {
-	m := money.NewFromNet(100_00, "EUR", money.VAT_19_00)
-	mFromAny, tFromAny, err := money.FromAny(m)
-	require.NoError(t, err)
-	require.Nil(t, tFromAny)
-	require.True(t, must.Must(mFromAny.Equals(m)))
-
-	mFromAny, tFromAny, err = money.FromAny(*m)
-	require.NoError(t, err)
-	require.Nil(t, tFromAny)
-	require.True(t, must.Must(mFromAny.Equals(m)))
-
-	mAsAnyMap, err := m.ToAnyMap()
-	require.NoError(t, err)
-	mFromAny, tFromAny, err = money.FromAny(mAsAnyMap)
-	require.NoError(t, err)
-	require.Nil(t, tFromAny)
-	require.True(t, must.Must(mFromAny.Equals(m)))
-
-	total := money.NewTotal(m)
-	require.NoError(t, err)
-	mFromAny, tFromAny, err = money.FromAny(total)
-	require.NoError(t, err)
-	require.Nil(t, mFromAny)
-	require.False(t, must.Must(total.GrossTotalOrZero("EUR").Equals(tFromAny.NetTotalOrZero("EUR"))))
-	require.True(t, must.Must(total.NetTotalOrZero("EUR").Equals(tFromAny.NetTotalOrZero("EUR"))))
-
-	require.NoError(t, err)
-	mFromAny, tFromAny, err = money.FromAny(*total)
-	require.NoError(t, err)
-	require.Nil(t, mFromAny)
-	require.False(t, must.Must(total.GrossTotalOrZero("EUR").Equals(tFromAny.NetTotalOrZero("EUR"))))
-	require.True(t, must.Must(total.NetTotalOrZero("EUR").Equals(tFromAny.NetTotalOrZero("EUR"))))
-
-	tAsAnyMap, err := total.ToAnyMap()
-	require.NoError(t, err)
-	mFromAny, tFromAny, err = money.FromAny(tAsAnyMap)
-	require.NoError(t, err)
-	require.Nil(t, mFromAny)
-	require.False(t, must.Must(total.GrossTotalOrZero("EUR").Equals(tFromAny.NetTotalOrZero("EUR"))))
-	require.True(t, must.Must(total.NetTotalOrZero("EUR").Equals(tFromAny.NetTotalOrZero("EUR"))))
-
-	_, _, err = money.FromAny(12)
-	require.Error(t, err)
-	_, _, err = money.FromAny(make(map[string]any))
-	require.Error(t, err)
-}
-*/
