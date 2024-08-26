@@ -15,7 +15,9 @@ func NewWithoutVat(amount int64, currency string) *MoneyWithoutVat {
 }
 
 func NewWithoutVatFromFloat(amount float64, currency string) *MoneyWithoutVat {
-	return &MoneyWithoutVat{money: *money.NewFromFloat(amount, currency)}
+	currencyDecimals := math.Pow10(money.GetCurrency(currency).Fraction)
+	amountCents := int64(math.Round(amount * currencyDecimals))
+	return NewWithoutVat(amountCents, currency)
 }
 
 func NewWithoutVatFromMoney(money *money.Money) *MoneyWithoutVat {
