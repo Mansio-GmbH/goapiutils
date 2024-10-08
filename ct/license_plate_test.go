@@ -12,7 +12,7 @@ func TestLicensePlate_MarshalJSON(t *testing.T) {
 	}
 	val, err := lp.MarshalJSON()
 	require.NoError(t, err)
-	require.Equal(t, "K-AM-123", string(val))
+	require.Equal(t, "\"K-AM-123\"", string(val))
 }
 
 func TestLicensePlate_UnmarshalJSON(t *testing.T) {
