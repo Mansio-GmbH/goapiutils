@@ -20,3 +20,32 @@ type Address struct {
 	Gate                   *string  `json:"gate,omitempty" dynamodbav:"gate,omitempty"`
 	Remarks                *string  `json:"remarks,omitempty" dynamodbav:"remarks,omitempty"`
 }
+
+func (a Address) IsSamePlace(other Address) bool {
+	if a.CountryCode != other.CountryCode {
+		return false
+	}
+	if a.PostalCode != other.PostalCode {
+		return false
+	}
+	if !stringPtrEq(a.City, other.City) {
+		return false
+	}
+	if !stringPtrEq(a.Street, other.Street) {
+		return false
+	}
+	if !stringPtrEq(a.HouseNumber, other.HouseNumber) {
+		return false
+	}
+	return true
+}
+
+func stringPtrEq(a, b *string) bool {
+	if a == nil && b == nil {
+		return true
+	}
+	if a == nil || b == nil {
+		return false
+	}
+	return *a == *b
+}
