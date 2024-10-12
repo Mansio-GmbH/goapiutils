@@ -17,3 +17,21 @@ func (l Location) IsSamePlace(other Location) bool {
 	}
 	return false
 }
+
+func (l Location) GetAddress() *Address {
+	return l.Address
+}
+
+func (l Location) GetCoordinates() *Coordinates {
+	return l.Coordinates
+}
+
+func (l Location) SetAddress(address *Address) *Location {
+	l.Address = address
+	return &l
+}
+
+func (l Location) SetCoordinates(coordinates *Coordinates) *Location {
+	l.Coordinates = coordinates
+	return &l
+}
