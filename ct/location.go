@@ -26,10 +26,10 @@ func (l Location) GetCoordinates() *Coordinates {
 	return l.Coordinates
 }
 
-func (l Location) SetAddress(address *Address) {
+func (l *Location) SetAddress(address *Address) {
 	l.Address = address
 }
 
-func (l Location) SetCoordinates(coordinates *Coordinates) {
+func (l *Location) SetCoordinates(coordinates *Coordinates) {
 	l.Coordinates = coordinates
 }
