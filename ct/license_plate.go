@@ -61,3 +61,7 @@ func ParseLicensePlate(s string) LicensePlate {
 		return r == '-' || r == ' '
 	})}
 }
+
+func (lp LicensePlate) IsValid() bool {
+	return len(lp.licensePlateSegments) > 0
+}
