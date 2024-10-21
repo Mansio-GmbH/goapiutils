@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"math"
-	"strconv"
 )
 
 var ErrInvalidTimeDistance = errors.New("invalid time distance")
@@ -13,6 +12,12 @@ type TimeDistance struct {
 	DurationS int
 	DistanceM Distance
 	Problem   error
+}
+
+type timeDistanceJson struct {
+	DurationS int      `json:"duration_s"`
+	DistanceM Distance `json:"distance_m"`
+	Problem   string   `json:"problem,omitempty"`
 }
 
 // Invalidate sets the TimeDistance to invalid and sets the duration and distance to the maximum possible value.
@@ -24,20 +29,19 @@ func (t *TimeDistance) Invalidate() {
 }
 
 func (t *TimeDistance) MarshalJSON() ([]byte, error) {
-	start := `{"duration_s":` + strconv.Itoa(t.DurationS) + `,"distance_m":` + strconv.FormatInt(int64(t.DistanceM), 10)
-	if t.Problem != nil {
-		return []byte(start + `",problem":"` + t.Problem.Error() + `"}`), nil
+	tmp := timeDistanceJson{
+		DurationS: t.DurationS,
+		DistanceM: t.DistanceM,
 	}
-	return []byte(start + `}`), nil
+	if t.Problem != nil {
+		tmp.Problem = t.Problem.Error()
+	}
+
+	return json.Marshal(tmp)
 }
 
 func (t *TimeDistance) UnmarshalJSON(b []byte) error {
-	tmp := struct {
-		DurationS int      `json:"duration_s"`
-		DistanceM Distance `json:"distance_m"`
-		Problem   string   `json:"problem,omitempty"`
-	}{}
-
+	var tmp timeDistanceJson
 	err := json.Unmarshal(b, &tmp)
 	if err != nil {
 		return errors.New("unable to unmarshal time distance")
