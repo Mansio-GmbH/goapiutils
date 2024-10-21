@@ -15,8 +15,8 @@ type TimeDistance struct {
 }
 
 type timeDistanceJson struct {
-	DurationS int      `json:"duration_s"`
-	DistanceM Distance `json:"distance_m"`
+	DurationS int      `json:"durationS"`
+	DistanceM Distance `json:"distanceM"`
 	Problem   string   `json:"problem,omitempty"`
 }
 
