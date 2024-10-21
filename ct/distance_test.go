@@ -1,9 +1,9 @@
-package distance_test
+package ct_test
 
 import (
+	"github.com/mansio-gmbh/goapiutils/ct"
 	"testing"
 
-	"github.com/mansio-gmbh/goapiutils/distance"
 	"github.com/stretchr/testify/require"
 )
 
@@ -54,7 +54,7 @@ func TestDistance_Meters(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := distance.Distance(tt.fields.value) * distance.Meter
+			d := ct.Distance(tt.fields.value) * ct.Meter
 			require.Equal(t, tt.want, d.Meters())
 		})
 	}
@@ -107,7 +107,7 @@ func TestDistance_Kilometers(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := distance.Distance(tt.fields.value) * distance.Meter
+			d := ct.Distance(tt.fields.value) * ct.Meter
 			require.Equal(t, tt.want, d.Kilometers())
 		})
 	}
@@ -118,13 +118,13 @@ func TestDistance_Truncate(t *testing.T) {
 		value int64
 	}
 	type args struct {
-		m distance.Distance
+		m ct.Distance
 	}
 	tests := []struct {
 		name   string
 		fields fields
 		args   args
-		want   distance.Distance
+		want   ct.Distance
 	}{
 		{
 			name: "Test 1",
@@ -179,7 +179,7 @@ func TestDistance_Truncate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := distance.Distance(tt.fields.value) * distance.Meter
+			d := ct.Distance(tt.fields.value) * ct.Meter
 			require.Equal(t, tt.want, d.Truncate(tt.args.m))
 		})
 	}
