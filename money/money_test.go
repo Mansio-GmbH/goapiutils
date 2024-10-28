@@ -36,6 +36,16 @@ func TestNewMoney(t *testing.T) {
 	require.Equal(t, int64(100_00), m.AmountNet(), "19: Net from net")
 }
 
+func TestDisplayFormatWithoutVAT(t *testing.T) {
+	m := money.NewFromGross(1000_00, "EUR", money.VAT_07_00)
+
+	expectedFormat := "1.000,00 €"
+
+	value := m.Display()
+
+	require.Equal(t, expectedFormat, value, fmt.Sprintf("Expected %s, got %s", expectedFormat, m.Display()))
+}
+
 func TestMoneyAdd(t *testing.T) {
 	testCases := []struct {
 		m1          *money.Money
