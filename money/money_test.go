@@ -37,7 +37,7 @@ func TestNewMoney(t *testing.T) {
 }
 
 func TestDisplayFormatWithoutVAT(t *testing.T) {
-	m := money.NewFromGross(1000_00, "DE-EUR", money.VAT_07_00)
+	m := money.NewFromGross(1000_00, "GER-EUR", money.VAT_07_00)
 
 	expectedFormat := "1.000,00 €"
 
