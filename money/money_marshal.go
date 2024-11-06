@@ -132,6 +132,8 @@ func (m *Money) UnmarshalJSON(b []byte) error {
 }
 
 func init() {
+	money.AddCurrency("EUR", "\u20ac", "1 $", ",", ".", 2)
+
 	money.MarshalJSON = func(m money.Money) ([]byte, error) {
 		mm := jsonMarshalMoneyWithoutVat{
 			Amount:      m.AsMajorUnits(),
