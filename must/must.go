@@ -1,6 +1,7 @@
 package must
 
 import (
+	"encoding/json"
 	"log"
 )
 
@@ -29,4 +30,12 @@ func WithoutError(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func MustJsonMarshal(v any) string {
+	return string(Must(json.Marshal(v)))
+}
+
+func MustJsonUnmarshal(data string, v any) {
+	WithoutError(json.Unmarshal([]byte(data), v))
 }
