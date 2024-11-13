@@ -32,10 +32,10 @@ func WithoutError(err error) {
 	}
 }
 
-func MustJsonMarshal(v any) string {
+func JsonMarshal(v any) string {
 	return string(Must(json.Marshal(v)))
 }
 
-func MustJsonUnmarshal(data string, v any) {
+func JsonUnmarshal(data string, v any) {
 	WithoutError(json.Unmarshal([]byte(data), v))
 }
