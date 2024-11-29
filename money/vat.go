@@ -42,3 +42,10 @@ func (v vat) Display() string {
 func (v vat) Multiplier() float64 {
 	return float64(v.rate) / float64(v.denominator)
 }
+
+func (v vat) IsEqual(other *vat) bool {
+	if other == nil {
+		return false
+	}
+	return v.code == other.code && v.rate == other.rate && v.denominator == other.denominator
+}

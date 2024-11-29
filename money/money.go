@@ -324,3 +324,11 @@ func (m *Money) netOrGross(gross bool) *money.Money {
 	}
 	return m.netMoney
 }
+
+func (m Money) IsEqual(other *Money) bool {
+	if other == nil {
+		return false
+	}
+	eq, err := m.Equals(other)
+	return eq && err == nil
+}

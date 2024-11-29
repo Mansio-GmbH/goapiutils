@@ -103,3 +103,11 @@ func (m *MoneyWithoutVat) Absolute() *MoneyWithoutVat {
 func (m *MoneyWithoutVat) Display() string {
 	return m.money.Display()
 }
+
+func (m *MoneyWithoutVat) IsEqual(other *MoneyWithoutVat) bool {
+	if other == nil {
+		return false
+	}
+	eq, err := m.money.Equals(&other.money)
+	return eq && err == nil
+}

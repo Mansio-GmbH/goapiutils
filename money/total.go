@@ -303,6 +303,9 @@ func (t Total) Percentage(perc float64) *Total {
 }
 
 func (t Total) Equals(ot *Total) bool {
+	if ot == nil {
+		return false
+	}
 
 	isZero := func(moneys map[vatcode]*MoneyWithoutVat) bool {
 		for _, money := range moneys {
@@ -338,4 +341,11 @@ func (t Total) Equals(ot *Total) bool {
 	}
 
 	return true
+}
+
+func (t Total) IsEqual(ot *Total) bool {
+	if ot == nil {
+		return false
+	}
+	return t.Equals(ot)
 }
