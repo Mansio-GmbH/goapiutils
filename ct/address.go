@@ -1,5 +1,7 @@
 package ct
 
+import "github.com/mansio-gmbh/goapiutils/equals"
+
 type Address struct {
 	Street                 *string        `json:"street,omitempty" dynamodbav:"street,omitempty" `
 	HouseNumber            *string        `json:"houseNumber,omitempty" dynamodbav:"houseNumber,omitempty"`
@@ -29,36 +31,14 @@ func (a Address) IsSamePlace(other Address) bool {
 	if a.PostalCode != other.PostalCode {
 		return false
 	}
-	if !ptrEq(a.City, other.City) {
+	if !equals.Ptr(a.City, other.City) {
 		return false
 	}
-	if !ptrEq(a.Street, other.Street) {
+	if !equals.Ptr(a.Street, other.Street) {
 		return false
 	}
-	if !ptrEq(a.HouseNumber, other.HouseNumber) {
+	if !equals.Ptr(a.HouseNumber, other.HouseNumber) {
 		return false
-	}
-	return true
-}
-
-func ptrEq[T comparable](a, b *T) bool {
-	if a == nil && b == nil {
-		return true
-	}
-	if a == nil || b == nil {
-		return false
-	}
-	return *a == *b
-}
-
-func stringSliceEq(a, b []string) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i := range a {
-		if a[i] != b[i] {
-			return false
-		}
 	}
 	return true
 }
@@ -68,13 +48,13 @@ func (a Address) IsEqual(other *Address) bool {
 		return false
 	}
 
-	if !ptrEq(a.Street, other.Street) {
+	if !equals.Ptr(a.Street, other.Street) {
 		return false
 	}
-	if !ptrEq(a.HouseNumber, other.HouseNumber) {
+	if !equals.Ptr(a.HouseNumber, other.HouseNumber) {
 		return false
 	}
-	if !ptrEq(a.City, other.City) {
+	if !equals.Ptr(a.City, other.City) {
 		return false
 	}
 	if a.PostalCode != other.PostalCode {
@@ -83,46 +63,46 @@ func (a Address) IsEqual(other *Address) bool {
 	if a.CountryCode != other.CountryCode {
 		return false
 	}
-	if !ptrEq(a.Name, other.Name) {
+	if !equals.Ptr(a.Name, other.Name) {
 		return false
 	}
-	if !ptrEq(a.Name2, other.Name2) {
+	if !equals.Ptr(a.Name2, other.Name2) {
 		return false
 	}
-	if !ptrEq(a.Name3, other.Name3) {
+	if !equals.Ptr(a.Name3, other.Name3) {
 		return false
 	}
-	if !ptrEq(a.TownArea, other.TownArea) {
+	if !equals.Ptr(a.TownArea, other.TownArea) {
 		return false
 	}
-	if !ptrEq(a.EmailAddress, other.EmailAddress) {
+	if !equals.Ptr(a.EmailAddress, other.EmailAddress) {
 		return false
 	}
-	if !ptrEq(a.PhoneNumber, other.PhoneNumber) {
+	if !equals.Ptr(a.PhoneNumber, other.PhoneNumber) {
 		return false
 	}
-	if !ptrEq(a.MobilePhoneNumber, other.MobilePhoneNumber) {
+	if !equals.Ptr(a.MobilePhoneNumber, other.MobilePhoneNumber) {
 		return false
 	}
-	if !stringSliceEq(a.AdditionalAddressLines, other.AdditionalAddressLines) {
+	if !equals.Arr(a.AdditionalAddressLines, other.AdditionalAddressLines) {
 		return false
 	}
-	if !ptrEq(a.Reference, other.Reference) {
+	if !equals.Ptr(a.Reference, other.Reference) {
 		return false
 	}
-	if !ptrEq(a.ContactPerson, other.ContactPerson) {
+	if !equals.Ptr(a.ContactPerson, other.ContactPerson) {
 		return false
 	}
-	if !ptrEq(a.FaxNumber, other.FaxNumber) {
+	if !equals.Ptr(a.FaxNumber, other.FaxNumber) {
 		return false
 	}
-	if !ptrEq(a.Gate, other.Gate) {
+	if !equals.Ptr(a.Gate, other.Gate) {
 		return false
 	}
-	if !ptrEq(a.Remarks, other.Remarks) {
+	if !equals.Ptr(a.Remarks, other.Remarks) {
 		return false
 	}
-	if !a.LoadingWindows.IsEqual(other.LoadingWindows) {
+	if !equals.ArrEq(a.LoadingWindows, other.LoadingWindows) {
 		return false
 	}
 	return true
