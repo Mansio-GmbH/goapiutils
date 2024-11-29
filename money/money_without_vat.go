@@ -104,7 +104,7 @@ func (m *MoneyWithoutVat) Display() string {
 	return m.money.Display()
 }
 
-func (m *MoneyWithoutVat) IsEqual(other *MoneyWithoutVat) bool {
+func (m MoneyWithoutVat) IsEqual(other *MoneyWithoutVat) bool {
 	if other == nil {
 		return false
 	}
