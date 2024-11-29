@@ -170,6 +170,6 @@ func TestAddressIsEqual(t *testing.T) {
 		},
 	}
 	for idx, test := range tests {
-		require.Equal(t, test.equal, test.address1.IsEqual(test.address2), "Test %d: Expected to be equal: %v and %v", idx, test.address1, test.address2)
+		require.Equal(t, test.equal, test.address1.IsEqual(&test.address2), "Test %d: Expected to be equal: %v and %v", idx, test.address1, test.address2)
 	}
 }

@@ -87,7 +87,7 @@ func TestLoadingWindowIsEqual(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		require.Equal(t, test.expectedResult, test.lw1.IsEqual(test.lw2))
+		require.Equal(t, test.expectedResult, test.lw1.IsEqual(&test.lw2))
 	}
 }
 

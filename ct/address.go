@@ -63,7 +63,11 @@ func stringSliceEq(a, b []string) bool {
 	return true
 }
 
-func (a Address) IsEqual(other Address) bool {
+func (a Address) IsEqual(other *Address) bool {
+	if other == nil {
+		return false
+	}
+
 	if !stringPtrEq(a.Street, other.Street) {
 		return false
 	}

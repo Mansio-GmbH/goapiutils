@@ -31,7 +31,7 @@ func (lw LoadingWindows) IsEqual(other LoadingWindows) bool {
 		return false
 	}
 	for i, w := range lw {
-		if !w.IsEqual(other[i]) {
+		if !w.IsEqual(&other[i]) {
 			return false
 		}
 	}
@@ -50,7 +50,10 @@ func (lw LoadingWindows) ApplyTo(date chrono.Date) (loadingWindows LoadingWindow
 	return
 }
 
-func (lw LoadingWindow) IsEqual(other LoadingWindow) bool {
+func (lw LoadingWindow) IsEqual(other *LoadingWindow) bool {
+	if other == nil {
+		return false
+	}
 	return lw.StartsAt == other.StartsAt && lw.EndsAt == other.EndsAt
 }
 
