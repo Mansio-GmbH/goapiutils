@@ -43,7 +43,7 @@ func TestCoordinates(t *testing.T) {
 	}
 
 	for idx, test := range tests {
-		require.Equal(t, test.equal, test.coord1.Equal(test.coord2), "Test %d: Expected to be equal: %v and %v", idx, test.coord1, test.coord2)
+		require.Equal(t, test.equal, test.coord1.IsEqual(&test.coord2), "Test %d: Expected to be equal: %v and %v", idx, test.coord1, test.coord2)
 		require.Equal(t, test.equalByDistance, test.coord1.EqualByDistance(test.coord2), "Test %d: Expected to be equal by distance: %v and %v", idx, test.coord1, test.coord2)
 		require.InDelta(t, test.distance, test.coord1.HaversineDistance(test.coord2), 0.0001, "Test %d: Expected distance: %v and %v to be %f", idx, test.coord1, test.coord2, test.distance)
 		for _, near := range test.isNear {

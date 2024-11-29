@@ -33,3 +33,17 @@ func (l *Location) SetAddress(address *Address) {
 func (l *Location) SetCoordinates(coordinates *Coordinates) {
 	l.Coordinates = coordinates
 }
+
+func (l Location) IsEqual(other *Location) bool {
+	if other == nil {
+		return false
+	}
+	if l.Address != nil && !l.Address.IsEqual(other.Address) {
+		return false
+	}
+
+	if l.Coordinates != nil && !l.Coordinates.IsEqual(other.Coordinates) {
+		return false
+	}
+	return true
+}

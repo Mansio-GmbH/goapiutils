@@ -65,3 +65,18 @@ func ParseLicensePlate(s string) LicensePlate {
 func (lp LicensePlate) IsValid() bool {
 	return len(lp.licensePlateSegments) > 0
 }
+
+func (lp LicensePlate) IsEqual(other *LicensePlate) bool {
+	if other == nil {
+		return false
+	}
+	if len(lp.licensePlateSegments) != len(other.licensePlateSegments) {
+		return false
+	}
+	for i, segment := range lp.licensePlateSegments {
+		if segment != other.licensePlateSegments[i] {
+			return false
+		}
+	}
+	return true
+}

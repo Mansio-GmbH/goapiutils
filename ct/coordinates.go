@@ -62,6 +62,9 @@ func (c Coordinates) EqualByDistance(other Coordinates) bool {
 	return c.IsNear(other, 0.001) // 1 meter
 }
 
-func (c Coordinates) Equal(other Coordinates) bool {
+func (c Coordinates) IsEqual(other *Coordinates) bool {
+	if other == nil {
+		return false
+	}
 	return c.Latitude == other.Latitude && c.Longitude == other.Longitude
 }

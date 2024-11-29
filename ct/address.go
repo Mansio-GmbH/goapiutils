@@ -29,19 +29,19 @@ func (a Address) IsSamePlace(other Address) bool {
 	if a.PostalCode != other.PostalCode {
 		return false
 	}
-	if !stringPtrEq(a.City, other.City) {
+	if !ptrEq(a.City, other.City) {
 		return false
 	}
-	if !stringPtrEq(a.Street, other.Street) {
+	if !ptrEq(a.Street, other.Street) {
 		return false
 	}
-	if !stringPtrEq(a.HouseNumber, other.HouseNumber) {
+	if !ptrEq(a.HouseNumber, other.HouseNumber) {
 		return false
 	}
 	return true
 }
 
-func stringPtrEq(a, b *string) bool {
+func ptrEq[T comparable](a, b *T) bool {
 	if a == nil && b == nil {
 		return true
 	}
@@ -68,13 +68,13 @@ func (a Address) IsEqual(other *Address) bool {
 		return false
 	}
 
-	if !stringPtrEq(a.Street, other.Street) {
+	if !ptrEq(a.Street, other.Street) {
 		return false
 	}
-	if !stringPtrEq(a.HouseNumber, other.HouseNumber) {
+	if !ptrEq(a.HouseNumber, other.HouseNumber) {
 		return false
 	}
-	if !stringPtrEq(a.City, other.City) {
+	if !ptrEq(a.City, other.City) {
 		return false
 	}
 	if a.PostalCode != other.PostalCode {
@@ -83,43 +83,43 @@ func (a Address) IsEqual(other *Address) bool {
 	if a.CountryCode != other.CountryCode {
 		return false
 	}
-	if !stringPtrEq(a.Name, other.Name) {
+	if !ptrEq(a.Name, other.Name) {
 		return false
 	}
-	if !stringPtrEq(a.Name2, other.Name2) {
+	if !ptrEq(a.Name2, other.Name2) {
 		return false
 	}
-	if !stringPtrEq(a.Name3, other.Name3) {
+	if !ptrEq(a.Name3, other.Name3) {
 		return false
 	}
-	if !stringPtrEq(a.TownArea, other.TownArea) {
+	if !ptrEq(a.TownArea, other.TownArea) {
 		return false
 	}
-	if !stringPtrEq(a.EmailAddress, other.EmailAddress) {
+	if !ptrEq(a.EmailAddress, other.EmailAddress) {
 		return false
 	}
-	if !stringPtrEq(a.PhoneNumber, other.PhoneNumber) {
+	if !ptrEq(a.PhoneNumber, other.PhoneNumber) {
 		return false
 	}
-	if !stringPtrEq(a.MobilePhoneNumber, other.MobilePhoneNumber) {
+	if !ptrEq(a.MobilePhoneNumber, other.MobilePhoneNumber) {
 		return false
 	}
 	if !stringSliceEq(a.AdditionalAddressLines, other.AdditionalAddressLines) {
 		return false
 	}
-	if !stringPtrEq(a.Reference, other.Reference) {
+	if !ptrEq(a.Reference, other.Reference) {
 		return false
 	}
-	if !stringPtrEq(a.ContactPerson, other.ContactPerson) {
+	if !ptrEq(a.ContactPerson, other.ContactPerson) {
 		return false
 	}
-	if !stringPtrEq(a.FaxNumber, other.FaxNumber) {
+	if !ptrEq(a.FaxNumber, other.FaxNumber) {
 		return false
 	}
-	if !stringPtrEq(a.Gate, other.Gate) {
+	if !ptrEq(a.Gate, other.Gate) {
 		return false
 	}
-	if !stringPtrEq(a.Remarks, other.Remarks) {
+	if !ptrEq(a.Remarks, other.Remarks) {
 		return false
 	}
 	if !a.LoadingWindows.IsEqual(other.LoadingWindows) {
