@@ -9,6 +9,7 @@ import (
 
 type S3Mock struct {
 	GetObjectFunc           func(ctx context.Context, params *s3.GetObjectInput, optFns ...func(*s3.Options)) (*s3.GetObjectOutput, error)
+	GetObjectTaggingFunc    func(ctx context.Context, params *s3.GetObjectTaggingInput, optFns ...func(*s3.Options)) (*s3.GetObjectTaggingOutput, error)
 	PutObjectFunc           func(ctx context.Context, params *s3.PutObjectInput, optFns ...func(*s3.Options)) (*s3.PutObjectOutput, error)
 	GetObjectAttributesFunc func(ctx context.Context, params *s3.GetObjectAttributesInput, optFns ...func(*s3.Options)) (*s3.GetObjectAttributesOutput, error)
 	ListObjectsV2Func       func(ctx context.Context, params *s3.ListObjectsV2Input, optFns ...func(*s3.Options)) (*s3.ListObjectsV2Output, error)
@@ -56,6 +57,13 @@ func (m S3Mock) CopyObject(ctx context.Context, params *s3.CopyObjectInput, optF
 		return m.CopyObjectFunc(ctx, params, optFns...)
 	}
 	return &s3.CopyObjectOutput{}, nil
+}
+
+func (m S3Mock) GetObjectTagging(ctx context.Context, params *s3.GetObjectTaggingInput, optFns ...func(*s3.Options)) (*s3.GetObjectTaggingOutput, error) {
+	if m.GetObjectTaggingFunc != nil {
+		return m.GetObjectTaggingFunc(ctx, params, optFns...)
+	}
+	return &s3.GetObjectTaggingOutput{}, nil
 }
 
 type PresignedS3Mock struct {
