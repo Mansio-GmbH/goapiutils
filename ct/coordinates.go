@@ -68,3 +68,16 @@ func (c Coordinates) IsEqual(other *Coordinates) bool {
 	}
 	return c.Latitude == other.Latitude && c.Longitude == other.Longitude
 }
+
+func (c Coordinates) ToLocation() *Location {
+	return &Location{
+		Coordinates: &c,
+	}
+}
+
+func (c Coordinates) WithAddress(a Address) *Location {
+	return &Location{
+		Coordinates: &c,
+		Address:     &a,
+	}
+}

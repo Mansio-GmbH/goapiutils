@@ -112,3 +112,16 @@ func (a Address) IsEqual(other *Address) bool {
 	}
 	return true
 }
+
+func (a Address) ToLocation() *Location {
+	return &Location{
+		Address: &a,
+	}
+}
+
+func (a Address) WithCoordinates(c Coordinates) *Location {
+	return &Location{
+		Address:     &a,
+		Coordinates: &c,
+	}
+}
