@@ -1,6 +1,9 @@
 package ct
 
-import "github.com/mansio-gmbh/goapiutils/equals"
+import (
+	"github.com/mansio-gmbh/goapiutils/equals"
+	"github.com/mansio-gmbh/goapiutils/hash"
+)
 
 type Address struct {
 	Street                     *string        `json:"street,omitempty" dynamodbav:"street,omitempty" `
@@ -124,4 +127,12 @@ func (a Address) WithCoordinates(c Coordinates) *Location {
 		Address:     &a,
 		Coordinates: &c,
 	}
+}
+
+func (a Address) UniqueHash() (string, error) {
+	return hash.SHA256(a)
+}
+
+func (a Address) MustUniqueHash() string {
+	return hash.MustSHA256(a)
 }

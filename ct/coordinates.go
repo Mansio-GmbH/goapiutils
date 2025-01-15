@@ -4,6 +4,7 @@ import (
 	"math"
 
 	"github.com/mansio-gmbh/goapiutils/chrono"
+	"github.com/mansio-gmbh/goapiutils/hash"
 )
 
 type Coordinates struct {
@@ -80,4 +81,12 @@ func (c Coordinates) WithAddress(a Address) *Location {
 		Coordinates: &c,
 		Address:     &a,
 	}
+}
+
+func (c Coordinates) UniqueHash() (string, error) {
+	return hash.SHA256(c)
+}
+
+func (c Coordinates) MustUniqueHash() string {
+	return hash.MustSHA256(c)
 }
