@@ -57,3 +57,16 @@ func (l Location) UniqueHash() (string, error) {
 func (l Location) MustUniqueHash() string {
 	return hash.MustSHA256(l)
 }
+
+func (l Location) IsEmpty() bool {
+	if l.Address == nil && l.Coordinates == nil {
+		return true
+	}
+	if l.Address != nil && !l.Address.IsEmpty() {
+		return false
+	}
+	if l.Coordinates != nil && !l.Coordinates.IsEmpty() {
+		return false
+	}
+	return true
+}

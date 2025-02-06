@@ -136,3 +136,11 @@ func (a Address) UniqueHash() (string, error) {
 func (a Address) MustUniqueHash() string {
 	return hash.MustSHA256(a)
 }
+
+func (a Address) IsEmpty() bool {
+	return (a.Street == nil || *a.Street == "") &&
+		(a.HouseNumber == nil || *a.HouseNumber == "") &&
+		(a.City == nil || *a.City == "") &&
+		a.PostalCode == "" &&
+		a.CountryCode == ""
+}

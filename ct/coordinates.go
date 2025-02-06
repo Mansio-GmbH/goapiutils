@@ -90,3 +90,11 @@ func (c Coordinates) UniqueHash() (string, error) {
 func (c Coordinates) MustUniqueHash() string {
 	return hash.MustSHA256(c)
 }
+
+func (c Coordinates) IsEmpty() bool {
+	return c.Latitude == 0 && c.Longitude == 0
+}
+
+func (c Coordinates) IsZero() bool {
+	return c.Latitude == 0 && c.Longitude == 0
+}
