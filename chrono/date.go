@@ -165,7 +165,7 @@ func ParseDateOrNil(str string) *Date {
 }
 
 func ParseDatePtrOrNil(str *string) *Date {
-	if str != nil {
+	if str == nil {
 		return nil
 	}
 	return ParseDateOrNil(*str)

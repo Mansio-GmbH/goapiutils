@@ -52,6 +52,10 @@ func (m *MoneyWithoutVat) Amount() int64 {
 	return m.money.Amount()
 }
 
+func (m MoneyWithoutVat) AmountAsMajorUnits() float64 {
+	return m.money.AsMajorUnits()
+}
+
 func (m *MoneyWithoutVat) CurrencyCode() string {
 	return m.money.Currency().Code
 }
