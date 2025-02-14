@@ -1,6 +1,9 @@
 package types
 
-import "github.com/mansio-gmbh/goapiutils/ct"
+import (
+	"github.com/mansio-gmbh/goapiutils/chrono"
+	"github.com/mansio-gmbh/goapiutils/ct"
+)
 
 type TourDoc struct {
 	BaseDoc
@@ -12,8 +15,8 @@ type TourDoc struct {
 	PickupPostalCodes                     []string      `json:"pickupPostalCodes"`
 	DeliveryPostalCodes                   []string      `json:"deliveryPostalCodes"`
 	AllPostalCodes                        []string      `json:"allPostalCodes"`
-	TourDateFrom                          *string       `json:"tourDateFrom"`
-	TourDateUntil                         *string       `json:"tourDateUntil"`
+	TourDateFrom                          chrono.Date   `json:"tourDateFrom"`
+	TourDateUntil                         chrono.Date   `json:"tourDateUntil"`
 	PickupTimeWindows                     []string      `json:"pickupTimeWindows"`
 	DeliveryTimeWindows                   []string      `json:"deliveryTimeWindows"`
 	ShipmentIDs                           []string      `json:"shipmentIDs"`

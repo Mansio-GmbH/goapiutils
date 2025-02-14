@@ -1,6 +1,7 @@
 package types
 
 import (
+	"github.com/mansio-gmbh/goapiutils/chrono"
 	"github.com/mansio-gmbh/goapiutils/ct"
 )
 
@@ -30,8 +31,8 @@ type ShipmentDoc struct {
 	PickupLocation    *ct.Location       `json:"pickupLocation,omitempty" mapstructure:"pickupLocation,omitempty"`
 	ConsigneeLocation *ct.Location       `json:"consigneeLocation,omitempty" mapstructure:"consigneeLocation,omitempty"`
 	DeliveryLocation  *ct.Location       `json:"deliveryLocation,omitempty" mapstructure:"deliveryLocation,omitempty"`
-	PickupDate        *string            `json:"pickupDate,omitempty" mapstructure:"pickupDate,omitempty"`
-	DeliveryDate      *string            `json:"deliveryDate,omitempty" mapstructure:"deliveryDate,omitempty"`
+	PickupDate        *chrono.Date       `json:"pickupDate,omitempty" mapstructure:"pickupDate,omitempty"`
+	DeliveryDate      *chrono.Date       `json:"deliveryDate,omitempty" mapstructure:"deliveryDate,omitempty"`
 	Positions         []ShipmentPosition `json:"positions" mapstructure:"positions"`
 	TransshipmentBan  *bool              `json:"transshipmentBan,omitempty" mapstructure:"transshipmentBan,omitempty"`
 	NoPaletteSwap     *bool              `json:"noPaletteSwap,omitempty" mapstructure:"noPaletteSwap,omitempty"`
