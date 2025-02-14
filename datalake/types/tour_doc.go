@@ -15,8 +15,8 @@ type TourDoc struct {
 	PickupPostalCodes                     []string      `json:"pickupPostalCodes"`
 	DeliveryPostalCodes                   []string      `json:"deliveryPostalCodes"`
 	AllPostalCodes                        []string      `json:"allPostalCodes"`
-	TourDateFrom                          chrono.Date   `json:"tourDateFrom"`
-	TourDateUntil                         chrono.Date   `json:"tourDateUntil"`
+	TourDateFrom                          *chrono.Date  `json:"tourDateFrom"`
+	TourDateUntil                         *chrono.Date  `json:"tourDateUntil"`
 	PickupTimeWindows                     []string      `json:"pickupTimeWindows"`
 	DeliveryTimeWindows                   []string      `json:"deliveryTimeWindows"`
 	ShipmentIDs                           []string      `json:"shipmentIDs"`
