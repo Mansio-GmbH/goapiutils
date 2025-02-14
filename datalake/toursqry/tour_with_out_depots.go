@@ -1,6 +1,9 @@
 package toursqry
 
-import "github.com/mansio-gmbh/goapiutils/datalake/types"
+import (
+	"github.com/mansio-gmbh/goapiutils/chrono"
+	"github.com/mansio-gmbh/goapiutils/datalake/types"
+)
 
 type DepotsAssignment struct {
 	OutDepotIDs       []string    `json:"outDepotIDs"`
@@ -15,4 +18,6 @@ type DepotsAssignment struct {
 type Tour struct {
 	types.TourDoc
 	DepotsAssignment DepotsAssignment `json:"depotsAssignment"`
+	TourDateFrom     chrono.Time      `json:"tourDateFrom"`
+	TourDateUntil    chrono.Time      `json:"tourDateUntil"`
 }
