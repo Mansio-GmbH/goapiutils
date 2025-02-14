@@ -16,20 +16,20 @@ type DepotDoc struct {
 }
 
 type OperationalArea struct {
-	IncludedPostalCodePrefixes *[]string `json:"includedPostalCodePrefixes" dynamodbav:"includedPostalCodePrefixes"`
-	ExcludedPostalCodePrefixes *[]string `json:"excludedPostalCodePrefixes" dynamodbav:"excludedPostalCodePrefixes"`
+	IncludedPostalCodePrefixes []string `json:"includedPostalCodePrefixes" dynamodbav:"includedPostalCodePrefixes"`
+	ExcludedPostalCodePrefixes []string `json:"excludedPostalCodePrefixes" dynamodbav:"excludedPostalCodePrefixes"`
 }
 
 func (oa OperationalArea) Includes(postalCodes ...string) bool {
 	if oa.IncludedPostalCodePrefixes == nil {
 		return false
 	}
-	included := pie.SortUsing(*oa.IncludedPostalCodePrefixes, func(i, j string) bool {
+	included := pie.SortUsing(oa.IncludedPostalCodePrefixes, func(i, j string) bool {
 		return len(i) <= len(j)
 	})
 	excluded := make([]string, 0)
 	if oa.ExcludedPostalCodePrefixes != nil {
-		excluded = pie.SortUsing(*oa.ExcludedPostalCodePrefixes, func(i, j string) bool {
+		excluded = pie.SortUsing(oa.ExcludedPostalCodePrefixes, func(i, j string) bool {
 			return len(i) <= len(j)
 		})
 	}
