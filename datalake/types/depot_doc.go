@@ -10,7 +10,7 @@ import (
 type DepotDoc struct {
 	BaseDoc
 	Name                string          `json:"name"`
-	TenantID            string          `json:"tenantId"`
+	TenantID            string          `json:"tenantID"`
 	Location            *ct.Location    `json:"location"`
 	CoreOperationalArea OperationalArea `json:"coreOperationalArea"`
 }
