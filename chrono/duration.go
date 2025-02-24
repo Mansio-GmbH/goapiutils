@@ -34,7 +34,11 @@ func DurationFrom(d time.Duration) Duration {
 }
 
 func (d Duration) String() string {
-	return time.Duration(d).String()
+	return d.ToDurationComponents().String()
+}
+
+func (d Duration) StringWithOpts(optFns ...DurationStringerOptFn) string {
+	return d.ToDurationComponents().StringWithOpts(optFns...)
 }
 
 func (d Duration) Nanoseconds() int64 {
@@ -215,7 +219,11 @@ func WithSeparator(separator string) DurationStringerOptFn {
 	}
 }
 
-func (dc DurationComponents) String(optFns ...DurationStringerOptFn) string {
+func (dc DurationComponents) String() string {
+	return dc.StringWithOpts()
+}
+
+func (dc DurationComponents) StringWithOpts(optFns ...DurationStringerOptFn) string {
 	dcl := durationComponentLabels{
 		weeks:     "w",
 		days:      "d",
