@@ -230,7 +230,7 @@ func (dc DurationComponents) StringWithOpts(optFns ...DurationStringerOptFn) str
 		hours:     "h",
 		minutes:   "m",
 		seconds:   "s",
-		separator: " ",
+		separator: "",
 	}
 	for _, optFn := range optFns {
 		optFn(&dcl)
@@ -238,19 +238,19 @@ func (dc DurationComponents) StringWithOpts(optFns ...DurationStringerOptFn) str
 
 	components := []string{}
 	if dc.Weeks > 0 {
-		components = append(components, fmt.Sprintf("%d %s", dc.Weeks, dcl.weeks))
+		components = append(components, fmt.Sprintf("%d%s", dc.Weeks, dcl.weeks))
 	}
 	if dc.Days > 0 {
-		components = append(components, fmt.Sprintf("%d %s", dc.Days, dcl.days))
+		components = append(components, fmt.Sprintf("%d%s", dc.Days, dcl.days))
 	}
 	if dc.Hours > 0 {
-		components = append(components, fmt.Sprintf("%d %s", dc.Hours, dcl.hours))
+		components = append(components, fmt.Sprintf("%d%s", dc.Hours, dcl.hours))
 	}
 	if dc.Minutes > 0 {
-		components = append(components, fmt.Sprintf("%d %s", dc.Minutes, dcl.minutes))
+		components = append(components, fmt.Sprintf("%d%s", dc.Minutes, dcl.minutes))
 	}
 	if dc.Seconds > 0 {
-		components = append(components, fmt.Sprintf("%d %s", dc.Seconds, dcl.seconds))
+		components = append(components, fmt.Sprintf("%d%s", dc.Seconds, dcl.seconds))
 	}
 	return strings.Join(components, dcl.separator)
 }
