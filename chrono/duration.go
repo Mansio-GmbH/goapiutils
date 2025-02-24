@@ -3,6 +3,8 @@ package chrono
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -83,7 +85,7 @@ func ParseDuration(d string) (Duration, error) {
 }
 
 func (d Duration) MarshalDynamoDBAttributeValue() (types.AttributeValue, error) {
-	return attributevalue.Marshal(d.toDurationComponents())
+	return attributevalue.Marshal(d.ToDurationComponents())
 }
 
 func (d *Duration) UnmarshalDynamoDBAttributeValue(v types.AttributeValue) error {
@@ -105,7 +107,7 @@ func (d *Duration) UnmarshalDynamoDBAttributeValue(v types.AttributeValue) error
 }
 
 func (d Duration) MarshalJSON() ([]byte, error) {
-	return json.Marshal(d.toDurationComponents())
+	return json.Marshal(d.ToDurationComponents())
 }
 
 func (d *Duration) UnmarshalJSON(b []byte) error {
@@ -126,7 +128,7 @@ func (d *Duration) UnmarshalJSON(b []byte) error {
 	return errors.New("unable to unmarshal duration")
 }
 
-func (d Duration) Decompose() (weeks, days, hours, minutes, seconds Duration) {
+func (d Duration) decompose() (weeks, days, hours, minutes, seconds Duration) {
 	weeks = d.Truncate(Hour * 24 * 7)
 	d = d - weeks
 	days = d.Truncate(Hour * 24)
@@ -139,8 +141,8 @@ func (d Duration) Decompose() (weeks, days, hours, minutes, seconds Duration) {
 	return
 }
 
-func (d Duration) toDurationComponents() DurationComponents {
-	weeks, days, hours, minutes, seconds := d.Decompose()
+func (d Duration) ToDurationComponents() DurationComponents {
+	weeks, days, hours, minutes, seconds := d.decompose()
 	return DurationComponents{
 		Weeks:   (int)(weeks / (Hour * 24 * 7)),
 		Days:    (int)(days / (Hour * 24)),
@@ -184,4 +186,63 @@ func (d Duration) Greater(od Duration) bool {
 
 func (d Duration) GreaterOrEqual(od Duration) bool {
 	return d >= od
+}
+
+type durationComponentLabels struct {
+	weeks     string
+	days      string
+	hours     string
+	minutes   string
+	seconds   string
+	separator string
+}
+
+type DurationStringerOptFn func(l *durationComponentLabels)
+
+func WithLabels(weeks, days, hours, minutes, seconds string) DurationStringerOptFn {
+	return func(l *durationComponentLabels) {
+		l.weeks = weeks
+		l.days = days
+		l.hours = hours
+		l.minutes = minutes
+		l.seconds = seconds
+	}
+}
+
+func WithSeparator(separator string) DurationStringerOptFn {
+	return func(l *durationComponentLabels) {
+		l.separator = separator
+	}
+}
+
+func (dc DurationComponents) String(optFns ...DurationStringerOptFn) string {
+	dcl := durationComponentLabels{
+		weeks:     "w",
+		days:      "d",
+		hours:     "h",
+		minutes:   "m",
+		seconds:   "s",
+		separator: " ",
+	}
+	for _, optFn := range optFns {
+		optFn(&dcl)
+	}
+
+	components := []string{}
+	if dc.Weeks > 0 {
+		components = append(components, fmt.Sprintf("%d %s", dc.Weeks, dcl.weeks))
+	}
+	if dc.Days > 0 {
+		components = append(components, fmt.Sprintf("%d %s", dc.Days, dcl.days))
+	}
+	if dc.Hours > 0 {
+		components = append(components, fmt.Sprintf("%d %s", dc.Hours, dcl.hours))
+	}
+	if dc.Minutes > 0 {
+		components = append(components, fmt.Sprintf("%d %s", dc.Minutes, dcl.minutes))
+	}
+	if dc.Seconds > 0 {
+		components = append(components, fmt.Sprintf("%d %s", dc.Seconds, dcl.seconds))
+	}
+	return strings.Join(components, dcl.separator)
 }
