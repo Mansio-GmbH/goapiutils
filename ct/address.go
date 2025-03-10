@@ -14,6 +14,7 @@ type Address struct {
 	Name                       *string        `json:"name,omitempty" dynamodbav:"name,omitempty"`
 	Name2                      *string        `json:"name2,omitempty" dynamodbav:"name2,omitempty"`
 	Name3                      *string        `json:"name3,omitempty" dynamodbav:"name3,omitempty"`
+	State                      *string        `json:"state,omitempty" dynamodbav:"state,omitempty"`
 	TownArea                   *string        `json:"townArea,omitempty" dynamodbav:"townArea,omitempty"`
 	EmailAddress               *string        `json:"emailAddress,omitempty" dynamodbav:"emailAddress,omitempty"`
 	PhoneNumber                *string        `json:"phoneNumber,omitempty" dynamodbav:"phoneNumber,omitempty"`
@@ -30,6 +31,7 @@ type Address struct {
 	BusinessRegistrationNumber *string        `json:"businessRegistrationNumber,omitempty" dynamodbav:"businessRegistrationNumber,omitempty"`
 	DistrictCourt              *string        `json:"districtCourt,omitempty" dynamodbav:"districtCourt,omitempty"`
 	BuyerReference             *string        `json:"buyerReference,omitempty" dynamodbav:"buyerReference,omitempty"`
+	EULicenseNumber            *string        `json:"euLicenseNumber,omitempty" dynamodbav:"euLicenseNumber,omitempty"`
 }
 
 func (a Address) IsSamePlace(other Address) bool {
