@@ -1,20 +1,24 @@
 package toursqry
 
 const (
-	DepotLoadingModeNone           = "none"
-	DepotLoadingModeOwner          = "owner"
-	DepotLoadingModeAll            = "all"
-	DistanceModeNone               = "none"
-	DistanceModeHaversine          = "haversine"
-	DistanceModeReal               = "real"
-	HandoverStationLoadingModeNone = "none"
-	HandoverStationLoadingModeAll  = "all"
+	DepotLoadingModeNone               = "none"
+	DepotLoadingModeOwner              = "owner"
+	DepotLoadingModeAll                = "all"
+	DepotLoadingModeByTenant           = "byTenant"
+	DistanceModeNone                   = "none"
+	DistanceModeHaversine              = "haversine"
+	DistanceModeReal                   = "real"
+	HandoverStationLoadingModeNone     = "none"
+	HandoverStationLoadingModeAll      = "all"
+	HandoverStationLoadingModeByTenant = "byTenant"
 )
 
 type Options struct {
-	DepotLoadingMode           string `json:"depotLoadingMode"`           // "none", "owner", "all"
-	DistanceMode               string `json:"distanceMode"`               // "none", "haversine", "real"
-	HandoverStationLoadingMode string `json:"handoverStationLoadingMode"` // "none", "all"
-	Shuffle                    bool   `json:"shuffle"`
-	ShuffleSeed                int64  `json:"shuffleSeed"`
+	DistanceMode               string   `json:"distanceMode"`                       // "none", "haversine", "real"
+	DepotLoadingMode           string   `json:"depotLoadingMode"`                   // "none", "owner", "all", "byTenant"
+	HandoverStationLoadingMode string   `json:"handoverStationLoadingMode"`         // "none", "all", "byTenant"
+	DepotTenantIDs             []string `json:"depotTenantIDs,omitempty"`           // only used if DepotLoadingMode == "byTenant"
+	HandoverStationTenantIDs   []string `json:"handoverStationTenantIDs,omitempty"` // only used if HandoverStationLoadingMode == "byTenant"
+	Shuffle                    bool     `json:"shuffle"`
+	ShuffleSeed                int64    `json:"shuffleSeed"`
 }
