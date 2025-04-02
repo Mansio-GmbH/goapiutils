@@ -51,7 +51,7 @@ type ShipmentDoc struct {
 	NoPaletteSwap         *bool              `json:"noPaletteSwap,omitempty" mapstructure:"noPaletteSwap,omitempty"`
 	StackableLoad         *bool              `json:"stackableLoad,omitempty" mapstructure:"stackableLoad,omitempty"`
 	Errors                []string           `json:"errors,omitempty" mapstructure:"errors,omitempty"`
-	ImportedAt            chrono.Date        `json:"importedAt,omitempty" mapstructure:"importedAt,omitempty"`
+	ImportedAt            chrono.Time        `json:"importedAt,omitempty" mapstructure:"importedAt,omitempty"`
 	ImportReference       *string            `json:"importReference,omitempty" mapstructure:"importReference,omitempty"`
 	CaseID                *string            `json:"caseID,omitempty" mapstructure:"caseID,omitempty"`
 }
