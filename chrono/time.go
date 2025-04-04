@@ -238,10 +238,57 @@ func (t Time) Truncate(d Duration) Time {
 	}
 }
 
+func (t Time) TruncateStd(d time.Duration) Time {
+	return Time{
+		val: t.val.Truncate(d),
+	}
+}
+
 func (t Time) Round(d Duration) Time {
 	return Time{
 		val: t.val.Round(d.ToStd()),
 	}
+}
+
+func (t Time) BeginningOfDay() Time {
+	tnew := t.TruncateStd(time.Hour)
+	hour := tnew.TruncateStd(time.Hour).Hour()
+	return tnew.Add(-time.Hour * time.Duration(hour)) // to handle time zone offsets
+}
+
+func (t Time) EndOfDay() Time {
+	return t.BeginningOfDay().AddDate(0, 0, 1).Add(-time.Second)
+}
+
+func (t Time) BeginningOfMonth() Time {
+	tnew := t.BeginningOfDay()
+	return tnew.AddDate(0, 0, -tnew.Day()+1)
+}
+
+func (t Time) EndOfMonth() Time {
+	tnew := t.BeginningOfMonth()
+	return tnew.AddDate(0, 1, 0).Add(-time.Second)
+}
+
+func (t Time) BeginningOfYear() Time {
+	tnew := t.BeginningOfDay()
+	return tnew.AddDate(0, 0, -tnew.YearDay()+1)
+}
+
+func (t Time) EndOfYear() Time {
+	tnew := t.BeginningOfYear()
+	return tnew.AddDate(1, 0, 0).Add(-time.Second)
+}
+
+func (t Time) BeginningOfWeek() Time {
+	tnew := t.BeginningOfDay()
+	weekday := int(tnew.Weekday()) - 1
+	return tnew.AddDate(0, 0, -weekday)
+}
+
+func (t Time) EndOfWeek() Time {
+	tnew := t.BeginningOfWeek()
+	return tnew.AddDate(0, 0, 7).Add(-time.Second)
 }
 
 type fmtCfg struct {
@@ -258,6 +305,10 @@ func (t Time) Format(optFns ...func(*fmtCfg)) string {
 		optFn(cfg)
 	}
 	return t.val.Format(cfg.layout)
+}
+
+func (t Time) String() string {
+	return t.Format()
 }
 
 func Parse(str string) (Time, error) {
