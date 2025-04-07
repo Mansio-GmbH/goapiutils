@@ -11,4 +11,6 @@ type HandoverStationDoc struct {
 	TenantID                 string          `json:"tenantID"`
 	Location                 *ct.Location    `json:"location"`
 	ExpectedHandoverDuration chrono.Duration `json:"expectedHandoverDuration"`
+	MaxTravelDistance        int             `json:"maxTravelDistance"`
+	MaxTravelDuration        int             `json:"maxTravelDuration"`
 }
