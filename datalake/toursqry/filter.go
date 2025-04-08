@@ -14,6 +14,7 @@ type TourFilter struct {
 	DeliveryCountryCode      string    `json:"deliveryCountryCode"`
 	PickupPostalCodePrefix   string    `json:"pickupPostalCodePrefix"`
 	DeliveryPostalCodePrefix string    `json:"deliveryPostalCodePrefix"`
+	ScheduleID               string    `json:"scheduleID"`
 }
 
 type Filters []TourFilter
