@@ -13,6 +13,8 @@ type DepotDoc struct {
 	TenantID            string          `json:"tenantID"`
 	Location            *ct.Location    `json:"location"`
 	CoreOperationalArea OperationalArea `json:"coreOperationalArea"`
+	MaxTravelDistance   int             `json:"maxTravelDistance"`
+	MaxTravelDuration   int             `json:"maxTravelDuration"`
 }
 
 type OperationalArea struct {
