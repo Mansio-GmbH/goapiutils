@@ -32,10 +32,10 @@ type TourDoc struct {
 	LastPickupToFirstDeliveryDurationSecs int           `json:"lastPickupToFirstDeliveryDurationSecs"`
 	TotalShipmentsDistance                float64       `json:"totalShipmentsDistance"`
 	TotalShipmentsDurationSecs            int           `json:"totalShipmentsDurationSecs"`
-	TotalWeight                           *Unit         `json:"totalWeight"`
-	TotalLoadingMeter                     *Unit         `json:"totalLoadingMeter"`
-	TotalVolume                           *Unit         `json:"totalVolume"`
-	TotalMonetaryValue                    *Unit         `json:"totalMonetaryValue"`
+	TotalWeight                           *ct.UnitValue `json:"totalWeight"`
+	TotalLoadingMeter                     *ct.UnitValue `json:"totalLoadingMeter"`
+	TotalVolume                           *ct.UnitValue `json:"totalVolume"`
+	TotalMonetaryValue                    *ct.UnitValue `json:"totalMonetaryValue"`
 	ImportedAt                            chrono.Time   `json:"importedAt,omitempty" mapstructure:"importedAt,omitempty"`
 	ImportReference                       *string       `json:"importReference,omitempty" mapstructure:"importReference,omitempty"`
 	CaseID                                *string       `json:"caseID,omitempty" mapstructure:"caseID,omitempty"`

@@ -1,23 +1,26 @@
 package types
 
 import (
+	"github.com/elliotchance/pie/v2"
 	"github.com/mansio-gmbh/goapiutils/chrono"
 	"github.com/mansio-gmbh/goapiutils/ct"
 )
 
 type ShipmentPosition struct {
-	Position        string `json:"position" mapstructure:"position"`
-	Count           string `json:"count" mapstructure:"count"`
-	PackagingKind   string `json:"packagingKind" mapstructure:"packagingKind"`
-	GoodDescription string `json:"goodDescription" mapstructure:"goodDescription"`
-	Weight          *Unit  `json:"weight" mapstructure:"weight"`
-	Length          *Unit  `json:"length" mapstructure:"length"`
-	Width           *Unit  `json:"width" mapstructure:"width"`
-	Height          *Unit  `json:"height" mapstructure:"height"`
-	Volume          *Unit  `json:"volume" mapstructure:"volume"`
-	MonetaryValue   *Unit  `json:"monetaryValue" mapstructure:"monetaryValue"`
-	LoadingMeter    *Unit  `json:"loadingMeter" mapstructure:"loadingMeter"`
-	Note            string `json:"note" mapstructure:"note"`
+	Position          string        `json:"position" mapstructure:"position"`
+	Count             string        `json:"count" mapstructure:"count"`
+	PackagingKind     string        `json:"packagingKind" mapstructure:"packagingKind"`
+	GoodDescription   string        `json:"goodDescription" mapstructure:"goodDescription"`
+	KindAndNumber     string        `json:"kindAndNumber" mapstructure:"kindAndNumber"`
+	FreightableWeight *ct.UnitValue `json:"freightableWeight" mapstructure:"freightableWeight"`
+	Weight            *ct.UnitValue `json:"weight" mapstructure:"weight"`
+	Length            *ct.UnitValue `json:"length" mapstructure:"length"`
+	Width             *ct.UnitValue `json:"width" mapstructure:"width"`
+	Height            *ct.UnitValue `json:"height" mapstructure:"height"`
+	Volume            *ct.UnitValue `json:"volume" mapstructure:"volume"`
+	MonetaryValue     *ct.UnitValue `json:"monetaryValue" mapstructure:"monetaryValue"`
+	LoadingMeter      *ct.UnitValue `json:"loadingMeter" mapstructure:"loadingMeter"`
+	Note              string        `json:"note" mapstructure:"note"`
 }
 
 type CityLocation struct {
@@ -70,34 +73,19 @@ func (s ShipmentDoc) DeliveryAt() *ct.Location {
 	return s.ConsigneeLocation
 }
 
-func (s ShipmentDoc) AggregatedWeight() *Unit {
-	var weight *Unit
-	for _, position := range s.Positions {
-		weight = AddUnit(weight, position.Weight)
-	}
-	return weight
+func (s ShipmentDoc) AggregatedWeight() (*ct.UnitValue, error) {
+	return ct.AddUnitValues(nil, pie.Map(s.Positions, func(position ShipmentPosition) *ct.UnitValue { return position.Weight })...)
 }
 
-func (s ShipmentDoc) AggregatedVolume() *Unit {
-	var volume *Unit
-	for _, position := range s.Positions {
-		volume = AddUnit(volume, position.Volume)
-	}
-	return volume
+func (s ShipmentDoc) AggregatedVolume() (*ct.UnitValue, error) {
+	return ct.AddUnitValues(nil, pie.Map(s.Positions, func(position ShipmentPosition) *ct.UnitValue { return position.Volume })...)
 }
 
-func (s ShipmentDoc) AggregatedLoadingMeter() *Unit {
-	var loadingMeter *Unit
-	for _, position := range s.Positions {
-		loadingMeter = AddUnit(loadingMeter, position.LoadingMeter)
-	}
-	return loadingMeter
+func (s ShipmentDoc) AggregatedLoadingMeter() (*ct.UnitValue, error) {
+	return ct.AddUnitValues(nil, pie.Map(s.Positions, func(position ShipmentPosition) *ct.UnitValue { return position.LoadingMeter })...)
 }
 
-func (s ShipmentDoc) AggregatedMonetaryValue() *Unit {
-	var monetaryValue *Unit
-	for _, position := range s.Positions {
-		monetaryValue = AddUnit(monetaryValue, position.MonetaryValue)
-	}
-	return monetaryValue
+func (s ShipmentDoc) AggregatedMonetaryValue() (*ct.UnitValue, error) {
+	return ct.AddUnitValues(nil, pie.Map(s.Positions, func(position ShipmentPosition) *ct.UnitValue { return position.MonetaryValue })...)
+
 }
