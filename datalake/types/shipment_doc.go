@@ -21,6 +21,7 @@ type ShipmentPosition struct {
 	MonetaryValue     *ct.UnitValue `json:"monetaryValue" mapstructure:"monetaryValue"`
 	LoadingMeter      *ct.UnitValue `json:"loadingMeter" mapstructure:"loadingMeter"`
 	Note              string        `json:"note" mapstructure:"note"`
+	PalletSpace       int           `json:"palletSpace" mapstructure:"palletSpace"`
 }
 
 type CityLocation struct {
