@@ -6,22 +6,44 @@ import (
 	"github.com/mansio-gmbh/goapiutils/ct"
 )
 
+type DangerousGoodsInformation struct {
+	Count                  string        `json:"count" mapstructure:"count"`
+	PackagingKind          string        `json:"packagingKind" mapstructure:"packagingKind"`
+	GrossWeight            *ct.UnitValue `json:"grossWeight" mapstructure:"grossWeight"`
+	UNNumber               string        `json:"unNumber" mapstructure:"unNumber"`
+	Multiplier             string        `json:"multiplier" mapstructure:"multiplier"`
+	DatabaseEntryID        string        `json:"databaseEntryID" mapstructure:"databaseEntryID"`
+	DatabaseEntryKey       string        `json:"databaseEntryKey" mapstructure:"databaseEntryKey"`
+	Description            string        `json:"description" mapstructure:"description"`
+	AdditionalInformation  string        `json:"additionalInformation" mapstructure:"additionalInformation"`
+	MainRisk               string        `json:"mainRisk" mapstructure:"mainRisk"`
+	SecondaryRisks         []string      `json:"secondaryRisks" mapstructure:"secondaryRisks"`
+	PackagingCode          string        `json:"packagingCode" mapstructure:"packagingCode"`
+	NetExplosiveMass       *ct.UnitValue `json:"netExplosiveMass" mapstructure:"netExplosiveMass"`
+	TransportCategory      string        `json:"transportCategory" mapstructure:"transportCategory"`
+	LimitedQuantity        *bool         `json:"limitedQuantity" mapstructure:"limitedQuantity"`
+	CalculatedPoints       *int          `json:"calculatedPoints" mapstructure:"calculatedPoints"`
+	TunnelRestrictions     string        `json:"tunnelRestrictions" mapstructure:"tunnelRestrictions"`
+	HazardousToEnvironment string        `json:"hazardousToEnvironment" mapstructure:"hazardousToEnvironment"`
+}
+
 type ShipmentPosition struct {
-	Position          string        `json:"position" mapstructure:"position"`
-	Count             string        `json:"count" mapstructure:"count"`
-	PackagingKind     string        `json:"packagingKind" mapstructure:"packagingKind"`
-	GoodDescription   string        `json:"goodDescription" mapstructure:"goodDescription"`
-	KindAndNumber     string        `json:"kindAndNumber" mapstructure:"kindAndNumber"`
-	FreightableWeight *ct.UnitValue `json:"freightableWeight" mapstructure:"freightableWeight"`
-	Weight            *ct.UnitValue `json:"weight" mapstructure:"weight"`
-	Length            *ct.UnitValue `json:"length" mapstructure:"length"`
-	Width             *ct.UnitValue `json:"width" mapstructure:"width"`
-	Height            *ct.UnitValue `json:"height" mapstructure:"height"`
-	Volume            *ct.UnitValue `json:"volume" mapstructure:"volume"`
-	MonetaryValue     *ct.UnitValue `json:"monetaryValue" mapstructure:"monetaryValue"`
-	LoadingMeter      *ct.UnitValue `json:"loadingMeter" mapstructure:"loadingMeter"`
-	Note              string        `json:"note" mapstructure:"note"`
-	PalletSpace       int           `json:"palletSpace" mapstructure:"palletSpace"`
+	Position                  string                      `json:"position" mapstructure:"position"`
+	Count                     string                      `json:"count" mapstructure:"count"`
+	PackagingKind             string                      `json:"packagingKind" mapstructure:"packagingKind"`
+	GoodDescription           string                      `json:"goodDescription" mapstructure:"goodDescription"`
+	KindAndNumber             string                      `json:"kindAndNumber" mapstructure:"kindAndNumber"`
+	FreightableWeight         *ct.UnitValue               `json:"freightableWeight" mapstructure:"freightableWeight"`
+	Weight                    *ct.UnitValue               `json:"weight" mapstructure:"weight"`
+	Length                    *ct.UnitValue               `json:"length" mapstructure:"length"`
+	Width                     *ct.UnitValue               `json:"width" mapstructure:"width"`
+	Height                    *ct.UnitValue               `json:"height" mapstructure:"height"`
+	Volume                    *ct.UnitValue               `json:"volume" mapstructure:"volume"`
+	MonetaryValue             *ct.UnitValue               `json:"monetaryValue" mapstructure:"monetaryValue"`
+	LoadingMeter              *ct.UnitValue               `json:"loadingMeter" mapstructure:"loadingMeter"`
+	Note                      string                      `json:"note" mapstructure:"note"`
+	PalletSpace               int                         `json:"palletSpace" mapstructure:"palletSpace"`
+	DangerousGoodsInformation []DangerousGoodsInformation `json:"dangerousGoodsInformation" mapstructure:"dangerousGoodsInformation"`
 }
 
 type CityLocation struct {
