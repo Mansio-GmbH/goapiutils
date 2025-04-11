@@ -36,6 +36,7 @@ type TourDoc struct {
 	TotalLoadingMeter                     *ct.UnitValue `json:"totalLoadingMeter"`
 	TotalVolume                           *ct.UnitValue `json:"totalVolume"`
 	TotalMonetaryValue                    *ct.UnitValue `json:"totalMonetaryValue"`
+	Errors                                []string      `json:"errors,omitempty" mapstructure:"errors,omitempty"`
 	ImportedAt                            chrono.Time   `json:"importedAt,omitempty" mapstructure:"importedAt,omitempty"`
 	ImportReference                       *string       `json:"importReference,omitempty" mapstructure:"importReference,omitempty"`
 	CaseID                                *string       `json:"caseID,omitempty" mapstructure:"caseID,omitempty"`
