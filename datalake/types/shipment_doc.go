@@ -57,29 +57,33 @@ type CityLocation struct {
 
 type ShipmentDoc struct {
 	BaseDoc
-	Number                string             `json:"number" mapstructure:"id"`
-	TenantID              string             `json:"tenantID" mapstructure:"tenantID"`
-	TourID                string             `json:"tourID" mapstructure:"tourID"`
-	OrderNumber           *string            `json:"orderNumber,omitempty" mapstructure:"orderNumber,omitempty"`
-	ReferenceNumber       *string            `json:"referenceNumber,omitempty" mapstructure:"referenceNumber,omitempty"`
-	SenderLocation        *ct.Location       `json:"senderLocation,omitempty" mapstructure:"senderLocation,omitempty"`
-	SenderCityLocation    *CityLocation      `json:"senderCityLocation,omitempty" mapstructure:"senderCityLocation,omitempty"`
-	PickupLocation        *ct.Location       `json:"pickupLocation,omitempty" mapstructure:"pickupLocation,omitempty"`
-	PickupCityLocation    *CityLocation      `json:"pickupCityLocation,omitempty" mapstructure:"pickupCityLocation,omitempty"`
-	ConsigneeLocation     *ct.Location       `json:"consigneeLocation,omitempty" mapstructure:"consigneeLocation,omitempty"`
-	ConsigneeCityLocation *CityLocation      `json:"consigneeCityLocation,omitempty" mapstructure:"consigneeCityLocation,omitempty"`
-	DeliveryLocation      *ct.Location       `json:"deliveryLocation,omitempty" mapstructure:"deliveryLocation,omitempty"`
-	DeliveryCityLocation  *CityLocation      `json:"deliveryCityLocation,omitempty" mapstructure:"deliveryCityLocation,omitempty"`
-	PickupDate            *chrono.Date       `json:"pickupDate,omitempty" mapstructure:"pickupDate,omitempty"`
-	DeliveryDate          *chrono.Date       `json:"deliveryDate,omitempty" mapstructure:"deliveryDate,omitempty"`
-	Positions             []ShipmentPosition `json:"positions" mapstructure:"positions"`
-	TransshipmentBan      *bool              `json:"transshipmentBan,omitempty" mapstructure:"transshipmentBan,omitempty"`
-	NoPaletteSwap         *bool              `json:"noPaletteSwap,omitempty" mapstructure:"noPaletteSwap,omitempty"`
-	StackableLoad         *bool              `json:"stackableLoad,omitempty" mapstructure:"stackableLoad,omitempty"`
-	Errors                []string           `json:"errors,omitempty" mapstructure:"errors,omitempty"`
-	ImportedAt            chrono.Time        `json:"importedAt,omitempty" mapstructure:"importedAt,omitempty"`
-	ImportReference       *string            `json:"importReference,omitempty" mapstructure:"importReference,omitempty"`
-	CaseID                *string            `json:"caseID,omitempty" mapstructure:"caseID,omitempty"`
+	Number                   string             `json:"number" mapstructure:"id"`
+	TenantID                 string             `json:"tenantID" mapstructure:"tenantID"`
+	TourID                   string             `json:"tourID" mapstructure:"tourID"`
+	OrderNumber              *string            `json:"orderNumber,omitempty" mapstructure:"orderNumber,omitempty"`
+	ReferenceNumber          *string            `json:"referenceNumber,omitempty" mapstructure:"referenceNumber,omitempty"`
+	SenderLocation           *ct.Location       `json:"senderLocation,omitempty" mapstructure:"senderLocation,omitempty"`
+	SenderCityLocation       *CityLocation      `json:"senderCityLocation,omitempty" mapstructure:"senderCityLocation,omitempty"`
+	SenderGeocodeLocation    *ct.Location       `json:"senderGeocodeLocation,omitempty" mapstructure:"senderGeocodeLocation,omitempty"`
+	PickupLocation           *ct.Location       `json:"pickupLocation,omitempty" mapstructure:"pickupLocation,omitempty"`
+	PickupCityLocation       *CityLocation      `json:"pickupCityLocation,omitempty" mapstructure:"pickupCityLocation,omitempty"`
+	PickupGeocodeLocation    *ct.Location       `json:"pickupGeocodeLocation,omitempty" mapstructure:"pickupGeocodeLocation,omitempty"`
+	ConsigneeLocation        *ct.Location       `json:"consigneeLocation,omitempty" mapstructure:"consigneeLocation,omitempty"`
+	ConsigneeCityLocation    *CityLocation      `json:"consigneeCityLocation,omitempty" mapstructure:"consigneeCityLocation,omitempty"`
+	ConsigneeGeocodeLocation *ct.Location       `json:"consigneeGeocodeLocation,omitempty" mapstructure:"consigneeGeocodeLocation,omitempty"`
+	DeliveryLocation         *ct.Location       `json:"deliveryLocation,omitempty" mapstructure:"deliveryLocation,omitempty"`
+	DeliveryCityLocation     *CityLocation      `json:"deliveryCityLocation,omitempty" mapstructure:"deliveryCityLocation,omitempty"`
+	DeliveryGeocodeLocation  *ct.Location       `json:"deliveryGeocodeLocation,omitempty" mapstructure:"deliveryGeocodeLocation,omitempty"`
+	PickupDate               *chrono.Date       `json:"pickupDate,omitempty" mapstructure:"pickupDate,omitempty"`
+	DeliveryDate             *chrono.Date       `json:"deliveryDate,omitempty" mapstructure:"deliveryDate,omitempty"`
+	Positions                []ShipmentPosition `json:"positions" mapstructure:"positions"`
+	TransshipmentBan         *bool              `json:"transshipmentBan,omitempty" mapstructure:"transshipmentBan,omitempty"`
+	NoPaletteSwap            *bool              `json:"noPaletteSwap,omitempty" mapstructure:"noPaletteSwap,omitempty"`
+	StackableLoad            *bool              `json:"stackableLoad,omitempty" mapstructure:"stackableLoad,omitempty"`
+	Errors                   []string           `json:"errors,omitempty" mapstructure:"errors,omitempty"`
+	ImportedAt               chrono.Time        `json:"importedAt,omitempty" mapstructure:"importedAt,omitempty"`
+	ImportReference          *string            `json:"importReference,omitempty" mapstructure:"importReference,omitempty"`
+	CaseID                   *string            `json:"caseID,omitempty" mapstructure:"caseID,omitempty"`
 }
 
 func (s ShipmentDoc) PickupAt() *ct.Location {
