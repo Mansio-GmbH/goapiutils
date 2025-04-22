@@ -70,3 +70,31 @@ func (l Location) IsEmpty() bool {
 	}
 	return true
 }
+
+func WrapAddress(addr Address) Location {
+	return Location{
+		Address: &addr,
+	}
+}
+
+func WrapAddresses(addr ...Address) []Location {
+	locations := make([]Location, len(addr))
+	for i := range addr {
+		locations[i] = WrapAddress(addr[i])
+	}
+	return locations
+}
+
+func WrapCoordinate(coord Coordinates) Location {
+	return Location{
+		Coordinates: &coord,
+	}
+}
+
+func WrapCoordinates(coords ...Coordinates) []Location {
+	locations := make([]Location, len(coords))
+	for i := range coords {
+		locations[i] = WrapCoordinate(coords[i])
+	}
+	return locations
+}
