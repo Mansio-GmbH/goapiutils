@@ -77,6 +77,15 @@ func WrapAddress(addr Address) Location {
 	}
 }
 
+func WrapAddressPtr(addr *Address) Location {
+	if addr == nil {
+		return Location{}
+	}
+	return Location{
+		Address: addr,
+	}
+}
+
 func WrapAddresses(addr ...Address) []Location {
 	locations := make([]Location, len(addr))
 	for i := range addr {
@@ -88,6 +97,15 @@ func WrapAddresses(addr ...Address) []Location {
 func WrapCoordinate(coord Coordinates) Location {
 	return Location{
 		Coordinates: &coord,
+	}
+}
+
+func WrapCoordinatePtr(coord *Coordinates) Location {
+	if coord == nil {
+		return Location{}
+	}
+	return Location{
+		Coordinates: coord,
 	}
 }
 
