@@ -71,6 +71,10 @@ func (l Location) IsEmpty() bool {
 	return true
 }
 
+func (l Location) IsZero() bool {
+	return l.IsEmpty()
+}
+
 func WrapAddress(addr Address) Location {
 	return Location{
 		Address: &addr,
