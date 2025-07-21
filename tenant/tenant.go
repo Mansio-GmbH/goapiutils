@@ -23,3 +23,23 @@ func Parse(tenant string) Tenant {
 		ID: tenant,
 	}
 }
+
+func (t Tenant) String() string {
+	return t.TenantID()
+}
+
+func (t Tenant) IsEmpty() bool {
+	return t.ID == ""
+}
+
+func (t Tenant) IsZero() bool {
+	return t.ID == ""
+}
+
+func (t Tenant) Equals(other Tenant) bool {
+	return t.TenantID() == other.TenantID()
+}
+
+func (t Tenant) IsValid() bool {
+	return t.ID != ""
+}
