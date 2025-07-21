@@ -3,11 +3,11 @@ package pagination
 import (
 	"encoding/json"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/elliotchance/pie/v2"
 	"github.com/mansio-gmbh/goapiutils/lastevaluatedkey"
 	"github.com/mansio-gmbh/goapiutils/must"
+	"github.com/mansio-gmbh/goapiutils/ptr"
 )
 
 const DEFAULT_LIMIT = 500
@@ -36,12 +36,12 @@ type (
 
 func (p Pagination) LimitCount() *int32 {
 	if p.Limit == nil {
-		return aws.Int32(DEFAULT_LIMIT)
+		return ptr.Val(int32(DEFAULT_LIMIT))
 	}
 	if *p.Limit > MAX_LIMIT {
-		return aws.Int32(MAX_LIMIT)
+		return ptr.Val(int32(MAX_LIMIT))
 	}
-	return aws.Int32(int32(*p.Limit))
+	return ptr.Val(int32(*p.Limit))
 }
 
 func (p Pagination) ExclusiveStartKey() map[string]types.AttributeValue {
@@ -56,7 +56,7 @@ func (w WithPagination) PaginationOrDefault(limit ...int) Pagination {
 			l = limit[0]
 		}
 		return Pagination{
-			Limit: aws.Int64(int64(l)),
+			Limit: ptr.Val(int64(l)),
 		}
 	}
 	return *w.Pagination

@@ -15,3 +15,11 @@ func (pc PostalCode) IsEqual(other *PostalCode) bool {
 	}
 	return pc.PostalCode == other.PostalCode && pc.CountryCode == other.CountryCode
 }
+
+func (pc PostalCode) IsEmpty() bool {
+	return pc.PostalCode == "" && pc.CountryCode == ""
+}
+
+func (pc PostalCode) IsZero() bool {
+	return pc.IsEmpty()
+}
