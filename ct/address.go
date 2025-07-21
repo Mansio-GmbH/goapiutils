@@ -32,6 +32,10 @@ type Address struct {
 	DistrictCourt              *string        `json:"districtCourt,omitempty" dynamodbav:"districtCourt,omitempty"`
 	BuyerReference             *string        `json:"buyerReference,omitempty" dynamodbav:"buyerReference,omitempty"`
 	EULicenseNumber            *string        `json:"euLicenseNumber,omitempty" dynamodbav:"euLicenseNumber,omitempty"`
+
+	// SearchInput is used for locating only
+	// It is a meta value not relevant for the address itself
+	SearchInput *string `json:"searchInput,omitempty" dynamodbav:"searchInput,omitempty"`
 }
 
 func (a Address) IsSamePlace(other Address) bool {
@@ -113,6 +117,9 @@ func (a Address) IsEqual(other *Address) bool {
 		return false
 	}
 	if !equals.ArrEq(a.LoadingWindows, other.LoadingWindows) {
+		return false
+	}
+	if !equals.Ptr(a.SearchInput, other.SearchInput) {
 		return false
 	}
 	return true
