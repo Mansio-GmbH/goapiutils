@@ -97,9 +97,44 @@ func (d Date) AddDate(years int, months int, days int) Date {
 	}
 }
 
+func (d Date) SubDate(u Date) (days int) {
+	return int(d.val.Sub(u.val).Hours() / 24)
+}
+
+func (d Date) BeginningOfMonth() Date {
+	return NewDate(d.Year(), d.Month(), 1, d.val.Location())
+}
+
+func (d Date) EndOfMonth() Date {
+	return NewDate(d.Year(), d.Month()+1, 0, d.val.Location())
+}
+
+func (d Date) BeginningOfYear() Date {
+	return NewDate(d.Year(), time.January, 1, d.val.Location())
+}
+
+func (d Date) EndOfYear() Date {
+	return NewDate(d.Year(), time.December, 31, d.val.Location())
+}
+
 func Today() Date {
 	return Date{
 		val: toDate(time.Now()),
+	}
+}
+
+func DateFrom(time time.Time) Date {
+	return Date{
+		val: toDate(time),
+	}
+}
+
+func DateFromPtr(t *time.Time) *Date {
+	if t == nil {
+		return nil
+	}
+	return &Date{
+		val: toDate(*t),
 	}
 }
 
@@ -139,6 +174,18 @@ func (d Date) UnixMicro() int64 {
 
 func (d Date) UnixNano() int64 {
 	return d.val.UnixNano()
+}
+
+func (d Date) ToStd() time.Time {
+	return d.val
+}
+
+func (d Date) ToStdPtr() *time.Time {
+	if d.IsZero() {
+		return nil
+	}
+	t := d.val
+	return &t
 }
 
 func ParseDate(str string) (Date, error) {
