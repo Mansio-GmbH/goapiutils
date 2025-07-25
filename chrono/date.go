@@ -14,7 +14,14 @@ type Date struct {
 	val time.Time
 }
 
-func NewDate(year int, month time.Month, day int, loc *time.Location) Date {
+func NewDate(year int, month time.Month, day int) Date {
+	return NewDateWithLocation(year, month, day, nil)
+}
+
+func NewDateWithLocation(year int, month time.Month, day int, loc *time.Location) Date {
+	if loc == nil {
+		loc = time.UTC
+	}
 	return Date{
 		val: time.Date(year, month, day, 0, 0, 0, 0, loc),
 	}
@@ -48,23 +55,41 @@ func (d Date) After(u Time) bool {
 }
 
 func (d Date) Before(u Time) bool {
-	return d.val.Before(u.val)
+	return d.BeforeDate(u.Date())
 }
 
 func (d Date) Equal(u Time) bool {
-	return d.val.Equal(u.val)
+	return d.EqualDate(u.Date())
 }
 
 func (d Date) AfterDate(u Date) bool {
-	return d.val.After(u.val)
+	dDay := d.val.Day()
+	dMonth := d.val.Month()
+	dYear := d.val.Year()
+	uDay := u.val.Day()
+	uMonth := u.val.Month()
+	uYear := u.val.Year()
+	return dYear > uYear || (dYear == uYear && (dMonth > uMonth || (dMonth == uMonth && dDay > uDay)))
 }
 
 func (d Date) BeforeDate(u Date) bool {
-	return d.val.Before(u.val)
+	dDay := d.val.Day()
+	dMonth := d.val.Month()
+	dYear := d.val.Year()
+	uDay := u.val.Day()
+	uMonth := u.val.Month()
+	uYear := u.val.Year()
+	return dYear < uYear || (dYear == uYear && (dMonth < uMonth || (dMonth == uMonth && dDay < uDay)))
 }
 
 func (d Date) EqualDate(u Date) bool {
-	return d.val.Equal(u.val)
+	return d.Day() == u.Day() &&
+		d.Month() == u.Month() &&
+		d.Year() == u.Year()
+}
+
+func (d Date) Past() bool {
+	return d.BeforeDate(Today())
 }
 
 func (d Date) IsZero() bool {
@@ -101,25 +126,43 @@ func (d Date) SubDate(u Date) (days int) {
 	return int(d.val.Sub(u.val).Hours() / 24)
 }
 
+func (d Date) DayBefore() Date {
+	return Date{
+		val: d.val.AddDate(0, 0, -1),
+	}
+}
+
+func (d Date) DayAfter() Date {
+	return Date{
+		val: d.val.AddDate(0, 0, 1),
+	}
+}
+
 func (d Date) BeginningOfMonth() Date {
-	return NewDate(d.Year(), d.Month(), 1, d.val.Location())
+	return NewDateWithLocation(d.Year(), d.Month(), 1, d.val.Location())
 }
 
 func (d Date) EndOfMonth() Date {
-	return NewDate(d.Year(), d.Month()+1, 0, d.val.Location())
+	return NewDateWithLocation(d.Year(), d.Month()+1, 0, d.val.Location())
 }
 
 func (d Date) BeginningOfYear() Date {
-	return NewDate(d.Year(), time.January, 1, d.val.Location())
+	return NewDateWithLocation(d.Year(), time.January, 1, d.val.Location())
 }
 
 func (d Date) EndOfYear() Date {
-	return NewDate(d.Year(), time.December, 31, d.val.Location())
+	return NewDateWithLocation(d.Year(), time.December, 31, d.val.Location())
 }
 
 func Today() Date {
 	return Date{
 		val: toDate(time.Now()),
+	}
+}
+
+func Yesterday() Date {
+	return Date{
+		val: toDate(time.Now().AddDate(0, 0, -1)),
 	}
 }
 

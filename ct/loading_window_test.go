@@ -20,20 +20,20 @@ func TestLoadingWindowApplyTo(t *testing.T) {
 		{
 			startsAt:         "08:00",
 			endsAt:           "12:00",
-			date:             chrono.NewDate(2024, 1, 1, time.UTC),
+			date:             chrono.NewDate(2024, 1, 1),
 			expectedStartsAt: chrono.NewTime(2024, 1, 1, 8, 0, 0, 0, time.UTC),
 			expectedEndsAt:   chrono.NewTime(2024, 1, 1, 12, 0, 0, 0, time.UTC),
 		},
 		{
 			startsAt:      "08 00",
 			endsAt:        "12:00",
-			date:          chrono.NewDate(2024, 1, 1, time.UTC),
+			date:          chrono.NewDate(2024, 1, 1),
 			expectedError: ErrorInvalidStartsAtFormat,
 		},
 		{
 			startsAt:      "08:00",
 			endsAt:        "12 00",
-			date:          chrono.NewDate(2024, 1, 1, time.UTC),
+			date:          chrono.NewDate(2024, 1, 1),
 			expectedError: ErrorInvalidEndsAtFormat,
 		},
 	}
@@ -108,7 +108,7 @@ func TestLoadingWindowsApplyTo(t *testing.T) {
 					EndsAt:   "17:00",
 				},
 			},
-			date: chrono.NewDate(2024, 1, 1, time.UTC),
+			date: chrono.NewDate(2024, 1, 1),
 			expectedLwsAt: LoadingWindowsAtDate{
 				{
 					StartsAt: chrono.NewTime(2024, 1, 1, 8, 0, 0, 0, time.UTC),
