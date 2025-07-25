@@ -92,6 +92,10 @@ func (d Date) Past() bool {
 	return d.BeforeDate(Today())
 }
 
+func (d Date) Future() bool {
+	return d.AfterDate(Today())
+}
+
 func (d Date) IsZero() bool {
 	return d.val.IsZero()
 }

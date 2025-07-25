@@ -196,6 +196,19 @@ func TestPast(t *testing.T) {
 	require.True(t, ti.Past())
 }
 
+func TestFuture(t *testing.T) {
+	ti := chrono.MustParseDate("2023-11-29")
+	require.False(t, ti.Future())
+
+	today := chrono.Today()
+	require.False(t, today.Past())
+	require.False(t, today.Future())
+
+	futureDate := today.DayAfter()
+	require.True(t, futureDate.Future())
+	require.False(t, futureDate.Past())
+}
+
 func TestDayBefore(t *testing.T) {
 	ti := chrono.MustParseDate("2023-11-29")
 	dayBefore := ti.DayBefore()
