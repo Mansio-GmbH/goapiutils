@@ -55,6 +55,14 @@ func (t Time) Equal(u Time) bool {
 	return t.val.Equal(u.val)
 }
 
+func (d Time) Past() bool {
+	return d.Before(Now())
+}
+
+func (d Time) Future() bool {
+	return d.After(Now())
+}
+
 func (t Time) AfterDate(u Date) bool {
 	return t.val.After(u.val)
 }
