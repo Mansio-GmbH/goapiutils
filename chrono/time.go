@@ -398,6 +398,9 @@ func parseTime(t string) (time.Time, error) {
 	if time, err := time.ParseInLocation("2006-01-02", t, time.Local); err == nil {
 		return time, nil
 	}
+	if time, err := time.Parse("2006-01-02Z07:00", t); err == nil {
+		return time, nil
+	}
 
 	return time.Time{}, errors.New("time invalid format")
 }

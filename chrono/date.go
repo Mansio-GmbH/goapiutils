@@ -46,8 +46,8 @@ func (d Date) PtrOrNil() *Date {
 	return &d
 }
 
-func (t *Date) Time() Time {
-	return Time{val: t.val}
+func (d *Date) Time() Time {
+	return Time{val: d.val}
 }
 
 func (d Date) After(u Time) bool {
@@ -277,25 +277,31 @@ func (d Date) Format(optFns ...func(*fmtCfg)) string {
 	return d.val.Format(cfg.layout)
 }
 
-func (t *Date) UnmarshalDynamoDBAttributeValue(v types.AttributeValue) error {
+func (d *Date) UnmarshalDynamoDBAttributeValue(v types.AttributeValue) error {
 	val := time.Time{}
 	if err := attributevalue.Unmarshal(v, &val); err != nil {
 		return err
 	}
-	t.val = val
+	d.val = val
 	return nil
 }
 
-func (t Date) MarshalDynamoDBAttributeValue() (types.AttributeValue, error) {
-	return attributevalue.Marshal(t.val)
+func (d Date) MarshalDynamoDBAttributeValue() (types.AttributeValue, error) {
+	return attributevalue.Marshal(d.val)
 }
 
-func (t Date) MarshalJSON() ([]byte, error) {
-	dateStr := t.val.Format("2006-01-02")
+func (d Date) WithTime(hours, minutes int) Time {
+	return Time{
+		val: time.Date(d.Year(), d.Month(), d.Day(), hours, minutes, 0, 0, d.Location()),
+	}
+}
+
+func (d Date) MarshalJSON() ([]byte, error) {
+	dateStr := d.val.Format("2006-01-02")
 	return json.Marshal(dateStr)
 }
 
-func (t *Date) UnmarshalJSON(b []byte) error {
+func (d *Date) UnmarshalJSON(b []byte) error {
 	var (
 		str string = ""
 		err error
@@ -308,7 +314,7 @@ func (t *Date) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	t.val = toDate(val)
+	d.val = toDate(val)
 	return nil
 }
 

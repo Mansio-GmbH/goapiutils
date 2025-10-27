@@ -232,3 +232,9 @@ func TestDayAfter(t *testing.T) {
 func TestYesterday(t *testing.T) {
 	require.Equal(t, chrono.Today().DayBefore(), chrono.Yesterday())
 }
+
+func TestWithTime(t *testing.T) {
+	ti := chrono.MustParseDate("2023-11-29Z")
+	timeWith := ti.WithTime(14, 30)
+	require.Equal(t, "2023-11-29T14:30:00Z", timeWith.Format(chrono.WithLayout(time.RFC3339)))
+}
