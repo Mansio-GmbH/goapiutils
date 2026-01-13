@@ -197,10 +197,9 @@ func (d Date) Local() Date {
 	}
 }
 
+// In returns a new Date in the provided location with same year, month, day values.
 func (d Date) In(loc *time.Location) Date {
-	return Date{
-		val: d.val.In(loc),
-	}
+	return NewDateWithLocation(d.Year(), d.Month(), d.Day(), loc)
 }
 
 func (d Date) Location() *time.Location {

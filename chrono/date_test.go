@@ -238,3 +238,12 @@ func TestWithTime(t *testing.T) {
 	timeWith := ti.WithTime(14, 30)
 	require.Equal(t, "2023-11-29T14:30:00Z", timeWith.Format(chrono.WithLayout(time.RFC3339)))
 }
+
+func TestInLocation(t *testing.T) {
+	ti := chrono.MustParseDate("2023-11-29")
+	loc, err := time.LoadLocation("America/New_York")
+	require.NoError(t, err)
+
+	timeInLoc := ti.In(loc)
+	require.Equal(t, "2023-11-29T00:00:00-05:00", timeInLoc.Format(chrono.WithLayout(time.RFC3339)))
+}
