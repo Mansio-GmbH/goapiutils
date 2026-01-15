@@ -5,91 +5,85 @@ import (
 	"fmt"
 	"math"
 	"strings"
-
-	"github.com/mansio-gmbh/goapiutils/equals"
-	"github.com/mansio-gmbh/goapiutils/ptr"
 )
 
 var (
-	ErrUnitsIncompatible = errors.New("units incompatible")
+	ErrUnitsIncompatible   = errors.New("units incompatible")
+	ErrConversionUnitEmpty = errors.New("conversion target unit is empty")
 )
 
 type UnitValue struct {
-	Unit  *string `json:"unit" dynamodbav:"unit,omitempty"`
+	Unit  string  `json:"unit" dynamodbav:"unit"`
 	Value float64 `json:"value" dynamodbav:"value"`
 }
 
 func NewUnitValue(value float64, unit string) *UnitValue {
 	return &UnitValue{
-		Unit:  &unit,
+		Unit:  unit,
 		Value: value,
 	}
 }
 
 const eps = 0.0001
 
-func (u UnitValue) IsEqual(other *UnitValue) bool {
+func (u *UnitValue) IsEqual(other *UnitValue) bool {
 	if other == nil {
 		return false
 	}
-	if equals.Ptr(u.Unit, other.Unit) && u.Value == other.Value {
+	if u.Unit == other.Unit && u.Value == other.Value {
 		return true
 	}
-	convToSameUnit, err := convertUnits(&u, other)
+
+	convertedUV := UnitValue{
+		Unit:  other.Unit,
+		Value: other.Value,
+	}
+	err := convertedUV.ConvertUnit(u.Unit)
 	if err != nil {
 		return false
 	}
-	return math.Abs(convToSameUnit.Value-u.Value) < eps
+
+	return math.Abs(convertedUV.Value-u.Value) < eps
 }
 
-func (u UnitValue) IsZero() bool {
+func (u *UnitValue) IsValid() bool {
+	return u.Unit != ""
+}
+
+func (u *UnitValue) IsZero() bool {
 	return u.Value == 0
 }
 
-func (u UnitValue) String() string {
-	return fmt.Sprintf("%f%s", u.Value, ptr.OrDefault(u.Unit))
+func (u *UnitValue) String() string {
+	return fmt.Sprintf("%f%s", u.Value, u.Unit)
 }
 
-func (u UnitValue) Add(other *UnitValue) (*UnitValue, error) {
+func (u *UnitValue) Add(other *UnitValue) error {
 	if other == nil {
-		return nil, nil
+		return nil
 	}
-	if equals.Ptr(u.Unit, other.Unit) {
-		return &UnitValue{
-			Unit:  u.Unit,
-			Value: u.Value + other.Value,
-		}, nil
+	if u.Unit == other.Unit {
+		u.Value += other.Value
+		return nil
 	}
-	if u.Unit == nil || other.Unit == nil {
-		return nil, ErrUnitsIncompatible
+
+	tmpUV := UnitValue{
+		Unit:  other.Unit,
+		Value: other.Value,
 	}
-	convToSameUnit, err := convertUnits(&u, other)
+	err := tmpUV.ConvertUnit(u.Unit)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return &UnitValue{
-		Unit:  u.Unit,
-		Value: convToSameUnit.Value + u.Value,
-	}, nil
+
+	u.Value += tmpUV.Value
+
+	return nil
 }
 
-func AddUnitValues(uv1 *UnitValue, uvs ...*UnitValue) (*UnitValue, error) {
-	if len(uvs) == 0 {
-		return uv1, nil
-	}
-	if uv1 == nil {
-		return AddUnitValues(uvs[0], uvs[1:]...)
-	}
-	uv1_2, err := uv1.Add(uvs[0])
-	if err != nil {
-		return nil, err
-	}
-	return AddUnitValues(uv1_2, uvs[1:]...)
-}
-
-func convertUnits(unit1, unit2 *UnitValue) (*UnitValue, error) {
-	if unit1 == nil || unit2 == nil || unit1.Unit == nil || unit2.Unit == nil {
-		return nil, nil
+func (u *UnitValue) ConvertUnit(targetUnit string) error {
+	if targetUnit == "" {
+		return ErrConversionUnitEmpty
 	}
 
 	knownConversions := map[string]map[string]float64{
@@ -136,24 +130,23 @@ func convertUnits(unit1, unit2 *UnitValue) (*UnitValue, error) {
 		"ps":   {"kw": 0.7355, "w": 735.5, "hp": 0.98632, "ps": 1},
 	}
 
-	sourceUnit := strings.ToLower(*unit2.Unit)
-	targetUnit := strings.ToLower(*unit1.Unit)
+	sourceUnit := strings.ToLower(u.Unit)
+	targetUnit = strings.ToLower(targetUnit)
 
 	if sourceUnit == targetUnit {
-		return &UnitValue{
-			Unit:  unit1.Unit,
-			Value: unit2.Value,
-		}, nil
+		return nil
 	}
 
-	if conversion, ok := knownConversions[sourceUnit]; !ok {
-		return nil, ErrUnitsIncompatible
-	} else if factor, ok := conversion[targetUnit]; !ok {
-		return nil, ErrUnitsIncompatible
-	} else {
-		return &UnitValue{
-			Unit:  unit1.Unit,
-			Value: unit2.Value * factor,
-		}, nil
+	conversion, okConversion := knownConversions[sourceUnit]
+	if !okConversion {
+		return ErrUnitsIncompatible
 	}
+	factor, okFactor := conversion[targetUnit]
+	if !okFactor {
+		return ErrUnitsIncompatible
+	}
+
+	u.Value = u.Value * factor
+
+	return nil
 }

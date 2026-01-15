@@ -1,7 +1,6 @@
 package types
 
 import (
-	"github.com/elliotchance/pie/v2"
 	"github.com/mansio-gmbh/goapiutils/chrono"
 	"github.com/mansio-gmbh/goapiutils/ct"
 )
@@ -101,18 +100,81 @@ func (s ShipmentDoc) DeliveryAt() *ct.Location {
 }
 
 func (s ShipmentDoc) AggregatedWeight() (*ct.UnitValue, error) {
-	return ct.AddUnitValues(nil, pie.Map(s.Positions, func(position ShipmentPosition) *ct.UnitValue { return position.Weight })...)
+	var aggregatedUV ct.UnitValue
+	for _, position := range s.Positions {
+		if position.Weight == nil {
+			continue
+		}
+		if aggregatedUV.IsZero() {
+			aggregatedUV = *position.Weight
+			continue
+		}
+
+		err := aggregatedUV.Add(position.Weight)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &aggregatedUV, nil
 }
 
 func (s ShipmentDoc) AggregatedVolume() (*ct.UnitValue, error) {
-	return ct.AddUnitValues(nil, pie.Map(s.Positions, func(position ShipmentPosition) *ct.UnitValue { return position.Volume })...)
+	var aggregatedUV ct.UnitValue
+	for _, position := range s.Positions {
+		if position.Volume == nil {
+			continue
+		}
+		if aggregatedUV.IsZero() {
+			aggregatedUV = *position.Volume
+			continue
+		}
+
+		err := aggregatedUV.Add(position.Volume)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &aggregatedUV, nil
 }
 
 func (s ShipmentDoc) AggregatedLoadingMeter() (*ct.UnitValue, error) {
-	return ct.AddUnitValues(nil, pie.Map(s.Positions, func(position ShipmentPosition) *ct.UnitValue { return position.LoadingMeter })...)
+	var aggregatedUV ct.UnitValue
+	for _, position := range s.Positions {
+		if position.LoadingMeter == nil {
+			continue
+		}
+		if aggregatedUV.IsZero() {
+			aggregatedUV = *position.LoadingMeter
+			continue
+		}
+
+		err := aggregatedUV.Add(position.LoadingMeter)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &aggregatedUV, nil
 }
 
 func (s ShipmentDoc) AggregatedMonetaryValue() (*ct.UnitValue, error) {
-	return ct.AddUnitValues(nil, pie.Map(s.Positions, func(position ShipmentPosition) *ct.UnitValue { return position.MonetaryValue })...)
+	var aggregatedUV ct.UnitValue
+	for _, position := range s.Positions {
+		if position.MonetaryValue == nil {
+			continue
+		}
+		if aggregatedUV.IsZero() {
+			aggregatedUV = *position.MonetaryValue
+			continue
+		}
 
+		err := aggregatedUV.Add(position.MonetaryValue)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &aggregatedUV, nil
 }
