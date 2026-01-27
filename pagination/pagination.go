@@ -49,6 +49,17 @@ func (p Pagination) ExclusiveStartKey() map[string]types.AttributeValue {
 	return lek
 }
 
+func (p *Pagination) WithPagination() WithPagination {
+	if p == nil || p.IsZero() {
+		return WithPagination{}
+	}
+	return WithPagination{Pagination: p}
+}
+
+func (p Pagination) IsZero() bool {
+	return p.Key == nil && p.Limit == nil
+}
+
 func (w WithPagination) PaginationOrDefault(limit ...int) Pagination {
 	if w.Pagination == nil {
 		l := DEFAULT_LIMIT
