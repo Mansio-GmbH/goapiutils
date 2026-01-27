@@ -1,8 +1,10 @@
 package chrono
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -383,6 +385,25 @@ func (t *Time) UnmarshalJSON(b []byte) error {
 		return err
 	}
 	return nil
+}
+
+func (d *Time) UnmarshalGQLContext(ctx context.Context, v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return errors.New("Time must be a string")
+	}
+	parsed, err := Parse(str)
+	if err != nil {
+		return err
+	}
+	*d = Time(parsed)
+	return nil
+}
+
+func (d Time) MarshalGQLContext(ctx context.Context, w io.Writer) error {
+	formattedDate := d.Format()
+	_, err := w.Write([]byte(formattedDate))
+	return err
 }
 
 func parseTime(t string) (time.Time, error) {
