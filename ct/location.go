@@ -120,3 +120,10 @@ func WrapCoordinates(coords ...Coordinates) []Location {
 	}
 	return locations
 }
+
+func (l Location) OrNil() *Location {
+	if l.IsEmpty() {
+		return nil
+	}
+	return &l
+}

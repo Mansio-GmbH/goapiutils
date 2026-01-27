@@ -153,3 +153,10 @@ func (a Address) IsEmpty() bool {
 		a.PostalCode == "" &&
 		a.CountryCode == ""
 }
+
+func (a Address) OrNil() *Address {
+	if a.IsEmpty() {
+		return nil
+	}
+	return &a
+}

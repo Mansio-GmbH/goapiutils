@@ -94,3 +94,10 @@ func (c Coordinates) MustUniqueHash() string {
 func (c Coordinates) IsEmpty() bool {
 	return c.Latitude == 0 && c.Longitude == 0
 }
+
+func (c Coordinates) OrNil() *Coordinates {
+	if c.IsEmpty() {
+		return nil
+	}
+	return &c
+}
