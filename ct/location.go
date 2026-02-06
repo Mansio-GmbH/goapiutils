@@ -1,6 +1,10 @@
 package ct
 
-import "github.com/mansio-gmbh/goapiutils/hash"
+import (
+	"fmt"
+
+	"github.com/mansio-gmbh/goapiutils/hash"
+)
 
 type Location struct {
 	Address     *Address     `json:"address" dynamodbav:"address"`
@@ -18,6 +22,35 @@ func (l Location) IsSamePlace(other Location) bool {
 		return l.Coordinates.EqualByDistance(*other.Coordinates)
 	}
 	return false
+}
+
+func (l Location) String() string {
+	var result string
+	if l.Address != nil {
+		result += fmt.Sprintf("%s %s", l.Address.CountryCode, l.Address.PostalCode)
+		if l.Address.City != nil {
+			result += fmt.Sprintf(" %s", *l.Address.City)
+		}
+		if l.Address.Street != nil {
+			result += fmt.Sprintf(" %s", *l.Address.Street)
+		}
+		if l.Address.HouseNumber != nil {
+			result += fmt.Sprintf(" %s", *l.Address.HouseNumber)
+		}
+	}
+
+	if l.Coordinates != nil {
+		if result != "" {
+			result += " | "
+		}
+		result += fmt.Sprintf("lat/lon: %f,%f", l.Coordinates.Latitude, l.Coordinates.Longitude)
+	}
+
+	if result == "" {
+		result = "location is nil"
+	}
+
+	return result
 }
 
 func (l Location) GetAddress() *Address {
