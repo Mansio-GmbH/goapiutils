@@ -7,11 +7,11 @@ import (
 )
 
 type Tenant struct {
-	ID string `json:"id" validate:"required"`
+	ID string `json:"id"`
 }
 
 type WithTenant struct {
-	Tenant Tenant `json:"tenant" validate:"required"`
+	Tenant Tenant `json:"tenant"`
 }
 
 func (t Tenant) TenantID() string {

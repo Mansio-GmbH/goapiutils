@@ -39,8 +39,8 @@ type jsonMarshalMoney struct {
 	DisplayNet          string  `json:"displayNet"`
 	DisplayGross        string  `json:"displayGross"`
 	// input only
-	Amount       *float64 `json:"amount,omitempty" validate:"required"`
-	ValueIsGross *bool    `json:"valueIsGross,omitempty" validate:"required"`
+	Amount       *float64 `json:"amount,omitempty"`
+	ValueIsGross *bool    `json:"valueIsGross,omitempty"`
 }
 
 type jsonMarshalMoneyWithoutVat struct {

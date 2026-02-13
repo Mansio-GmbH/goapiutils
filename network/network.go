@@ -8,7 +8,7 @@ import (
 
 type (
 	Network struct {
-		ID string `json:"id" validate:"required"`
+		ID string `json:"id"`
 	}
 )
 
