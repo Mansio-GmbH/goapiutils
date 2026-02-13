@@ -160,3 +160,33 @@ func (a Address) OrNil() *Address {
 	}
 	return &a
 }
+
+func (a Address) IsZero() bool {
+	return (a.Street == nil || *a.Street == "") &&
+		(a.HouseNumber == nil || *a.HouseNumber == "") &&
+		(a.City == nil || *a.City == "") &&
+		a.PostalCode == "" &&
+		a.CountryCode == "" &&
+		(a.Name == nil || *a.Name == "") &&
+		(a.Name2 == nil || *a.Name2 == "") &&
+		(a.Name3 == nil || *a.Name3 == "") &&
+		(a.State == nil || *a.State == "") &&
+		(a.TownArea == nil || *a.TownArea == "") &&
+		(a.EmailAddress == nil || *a.EmailAddress == "") &&
+		(a.PhoneNumber == nil || *a.PhoneNumber == "") &&
+		(a.MobilePhoneNumber == nil || *a.MobilePhoneNumber == "") &&
+		len(a.AdditionalAddressLines) == 0 &&
+		(a.Reference == nil || *a.Reference == "") &&
+		(a.ContactPerson == nil || *a.ContactPerson == "") &&
+		(a.FaxNumber == nil || *a.FaxNumber == "") &&
+		(a.Gate == nil || *a.Gate == "") &&
+		(a.Remarks == nil || *a.Remarks == "") &&
+		len(a.LoadingWindows) == 0 &&
+		(a.Website == nil || *a.Website == "") &&
+		(a.VatID == nil || *a.VatID == "") &&
+		(a.BusinessRegistrationNumber == nil || *a.BusinessRegistrationNumber == "") &&
+		(a.DistrictCourt == nil || *a.DistrictCourt == "") &&
+		(a.BuyerReference == nil || *a.BuyerReference == "") &&
+		(a.EULicenseNumber == nil || *a.EULicenseNumber == "") &&
+		(a.SearchInput == nil || *a.SearchInput == "")
+}
