@@ -345,7 +345,7 @@ func ParseOrNil(str string) *Time {
 }
 
 func ParsePtrOrNil(str *string) *Time {
-	if str != nil {
+	if str == nil {
 		return nil
 	}
 	return ParseOrNil(*str)
