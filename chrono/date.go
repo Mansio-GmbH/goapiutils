@@ -333,8 +333,11 @@ func (d *Date) UnmarshalGQLContext(ctx context.Context, v any) error {
 }
 
 func (d Date) MarshalGQLContext(ctx context.Context, w io.Writer) error {
-	formattedDate := d.Format()
-	_, err := w.Write([]byte(formattedDate))
+	bytes, err := d.MarshalJSON()
+	if err != nil {
+		return err
+	}
+	_, err = w.Write(bytes)
 	return err
 }
 
