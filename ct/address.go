@@ -6,32 +6,32 @@ import (
 )
 
 type Address struct {
-	Street                     *string        `json:"street,omitempty" dynamodbav:"street,omitempty" `
-	HouseNumber                *string        `json:"houseNumber,omitempty" dynamodbav:"houseNumber,omitempty"`
-	City                       *string        `json:"city,omitempty" dynamodbav:"city,omitempty" `
-	PostalCode                 string         `json:"postalCode,omitempty" dynamodbav:"postalCode,omitempty"`
-	CountryCode                string         `json:"countryCode,omitempty" dynamodbav:"countryCode,omitempty"`
-	Name                       *string        `json:"name,omitempty" dynamodbav:"name,omitempty"`
-	Name2                      *string        `json:"name2,omitempty" dynamodbav:"name2,omitempty"`
-	Name3                      *string        `json:"name3,omitempty" dynamodbav:"name3,omitempty"`
-	State                      *string        `json:"state,omitempty" dynamodbav:"state,omitempty"`
-	TownArea                   *string        `json:"townArea,omitempty" dynamodbav:"townArea,omitempty"`
-	EmailAddress               *string        `json:"emailAddress,omitempty" dynamodbav:"emailAddress,omitempty"`
-	PhoneNumber                *string        `json:"phoneNumber,omitempty" dynamodbav:"phoneNumber,omitempty"`
-	MobilePhoneNumber          *string        `json:"mobilePhoneNumber,omitempty" dynamodbav:"mobilePhoneNumber,omitempty"`
-	AdditionalAddressLines     []string       `json:"additionalAddressLines,omitempty" dynamodbav:"additionalAddressLines,omitempty"`
-	Reference                  *string        `json:"reference,omitempty" dynamodbav:"reference,omitempty"`
-	ContactPerson              *string        `json:"contactPerson,omitempty" dynamodbav:"contactPerson,omitempty"`
-	FaxNumber                  *string        `json:"faxNumber,omitempty" dynamodbav:"faxNumber,omitempty"`
-	Gate                       *string        `json:"gate,omitempty" dynamodbav:"gate,omitempty"`
-	Remarks                    *string        `json:"remarks,omitempty" dynamodbav:"remarks,omitempty"`
-	LoadingWindows             LoadingWindows `json:"loadingWindows,omitempty" dynamodbav:"loadingWindows,omitempty"`
-	Website                    *string        `json:"website,omitempty" dynamodbav:"website,omitempty"`
-	VatID                      *string        `json:"vatID,omitempty" dynamodbav:"vatID,omitempty"`
-	BusinessRegistrationNumber *string        `json:"businessRegistrationNumber,omitempty" dynamodbav:"businessRegistrationNumber,omitempty"`
-	DistrictCourt              *string        `json:"districtCourt,omitempty" dynamodbav:"districtCourt,omitempty"`
-	BuyerReference             *string        `json:"buyerReference,omitempty" dynamodbav:"buyerReference,omitempty"`
-	EULicenseNumber            *string        `json:"euLicenseNumber,omitempty" dynamodbav:"euLicenseNumber,omitempty"`
+	Street                     *string         `json:"street,omitempty" dynamodbav:"street,omitempty" `
+	HouseNumber                *string         `json:"houseNumber,omitempty" dynamodbav:"houseNumber,omitempty"`
+	City                       *string         `json:"city,omitempty" dynamodbav:"city,omitempty" `
+	PostalCode                 string          `json:"postalCode,omitempty" dynamodbav:"postalCode,omitempty"`
+	CountryCode                string          `json:"countryCode,omitempty" dynamodbav:"countryCode,omitempty"`
+	Name                       *string         `json:"name,omitempty" dynamodbav:"name,omitempty"`
+	Name2                      *string         `json:"name2,omitempty" dynamodbav:"name2,omitempty"`
+	Name3                      *string         `json:"name3,omitempty" dynamodbav:"name3,omitempty"`
+	State                      *string         `json:"state,omitempty" dynamodbav:"state,omitempty"`
+	TownArea                   *string         `json:"townArea,omitempty" dynamodbav:"townArea,omitempty"`
+	EmailAddress               *string         `json:"emailAddress,omitempty" dynamodbav:"emailAddress,omitempty"`
+	PhoneNumber                *string         `json:"phoneNumber,omitempty" dynamodbav:"phoneNumber,omitempty"`
+	MobilePhoneNumber          *string         `json:"mobilePhoneNumber,omitempty" dynamodbav:"mobilePhoneNumber,omitempty"`
+	AdditionalAddressLines     []string        `json:"additionalAddressLines,omitempty" dynamodbav:"additionalAddressLines,omitempty"`
+	Reference                  *string         `json:"reference,omitempty" dynamodbav:"reference,omitempty"`
+	ContactPerson              *string         `json:"contactPerson,omitempty" dynamodbav:"contactPerson,omitempty"`
+	FaxNumber                  *string         `json:"faxNumber,omitempty" dynamodbav:"faxNumber,omitempty"`
+	Gate                       *string         `json:"gate,omitempty" dynamodbav:"gate,omitempty"`
+	Remarks                    *string         `json:"remarks,omitempty" dynamodbav:"remarks,omitempty"`
+	LoadingWindows             []LoadingWindow `json:"loadingWindows,omitempty" dynamodbav:"loadingWindows,omitempty"`
+	Website                    *string         `json:"website,omitempty" dynamodbav:"website,omitempty"`
+	VatID                      *string         `json:"vatID,omitempty" dynamodbav:"vatID,omitempty"`
+	BusinessRegistrationNumber *string         `json:"businessRegistrationNumber,omitempty" dynamodbav:"businessRegistrationNumber,omitempty"`
+	DistrictCourt              *string         `json:"districtCourt,omitempty" dynamodbav:"districtCourt,omitempty"`
+	BuyerReference             *string         `json:"buyerReference,omitempty" dynamodbav:"buyerReference,omitempty"`
+	EULicenseNumber            *string         `json:"euLicenseNumber,omitempty" dynamodbav:"euLicenseNumber,omitempty"`
 
 	// SearchInput is used for locating only
 	// It is a meta value not relevant for the address itself
