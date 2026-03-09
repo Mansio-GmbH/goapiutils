@@ -172,6 +172,12 @@ func Yesterday() Date {
 	}
 }
 
+func Tomorrow() Date {
+	return Date{
+		val: toDate(time.Now().AddDate(0, 0, 1)),
+	}
+}
+
 func DateFrom(time time.Time) Date {
 	return Date{
 		val: toDate(time),
