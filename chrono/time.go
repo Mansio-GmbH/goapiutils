@@ -2,6 +2,8 @@ package chrono
 
 import (
 	"context"
+	"database/sql"
+	"database/sql/driver"
 	"encoding/json"
 	"errors"
 	"io"
@@ -427,4 +429,17 @@ func parseTime(t string) (time.Time, error) {
 	}
 
 	return time.Time{}, errors.New("time invalid format")
+}
+
+func (t *Time) Scan(value interface{}) error {
+	var nt sql.NullTime
+	if err := nt.Scan(value); err != nil {
+		return err
+	}
+	t.val = nt.Time
+	return nil
+}
+
+func (t Time) Value() (driver.Value, error) {
+	return t.val, nil
 }

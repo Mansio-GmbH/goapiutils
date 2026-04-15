@@ -2,6 +2,8 @@ package chrono
 
 import (
 	"context"
+	"database/sql"
+	"database/sql/driver"
 	"encoding/json"
 	"errors"
 	"io"
@@ -351,4 +353,21 @@ func toDate(ti time.Time) time.Time {
 	year, month, day := ti.Date()
 	date := time.Date(year, month, day, 0, 0, 0, 0, ti.Location())
 	return date
+}
+
+func (d *Date) Scan(value interface{}) error {
+	var nt sql.NullTime
+	if err := nt.Scan(value); err != nil {
+		return err
+	}
+	if !nt.Valid {
+		d.val = time.Time{} // zero value
+		return nil
+	}
+	d.val = nt.Time
+	return nil
+}
+
+func (d Date) Value() (driver.Value, error) {
+	return d.val, nil
 }
