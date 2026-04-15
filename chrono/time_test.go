@@ -3,6 +3,7 @@ package chrono_test
 import (
 	"encoding/json"
 	"testing"
+	"time"
 
 	"github.com/mansio-gmbh/goapiutils/chrono"
 	"github.com/stretchr/testify/require"
@@ -224,4 +225,53 @@ func TestTimePast(t *testing.T) {
 	pastTime := chrono.Now().AddDate(0, 0, -1)
 	require.True(t, pastTime.Past())
 	require.False(t, pastTime.Future())
+}
+
+// SQL Scan and Value tests
+
+func TestTimeScanTime(t *testing.T) {
+	src := time.Date(2026, time.April, 15, 14, 30, 0, 0, time.UTC)
+	var got chrono.Time
+	require.NoError(t, got.Scan(src))
+	require.True(t, got.ToStd().Equal(src))
+}
+
+func TestTimeScanNil(t *testing.T) {
+	var got chrono.Time
+	require.NoError(t, got.Scan(nil))
+	require.True(t, got.IsZero())
+}
+
+func TestTimeScanUnsupportedType(t *testing.T) {
+	var got chrono.Time
+	err := got.Scan(42)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "unsupported Scan")
+}
+
+func TestTimeValue(t *testing.T) {
+	src := time.Date(2026, time.April, 15, 14, 30, 0, 0, time.UTC)
+	ct := chrono.From(src)
+	v, err := ct.Value()
+	require.NoError(t, err)
+	got, ok := v.(time.Time)
+	require.True(t, ok)
+	require.True(t, got.Equal(src))
+}
+
+func TestTimeValueZero(t *testing.T) {
+	v, err := chrono.Time{}.Value()
+	require.NoError(t, err)
+	got, ok := v.(time.Time)
+	require.True(t, ok)
+	require.True(t, got.IsZero())
+}
+
+func TestTimeScanValueRoundTrip(t *testing.T) {
+	orig := chrono.From(time.Date(2026, time.April, 15, 14, 30, 0, 0, time.UTC))
+	v, err := orig.Value()
+	require.NoError(t, err)
+	var got chrono.Time
+	require.NoError(t, got.Scan(v))
+	require.True(t, got.ToStd().Equal(orig.ToStd()))
 }

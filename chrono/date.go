@@ -364,7 +364,7 @@ func (d *Date) Scan(value interface{}) error {
 		d.val = time.Time{} // zero value
 		return nil
 	}
-	d.val = nt.Time
+	d.val = toDate(nt.Time)
 	return nil
 }
 

@@ -247,3 +247,59 @@ func TestInLocation(t *testing.T) {
 	timeInLoc := ti.In(loc)
 	require.Equal(t, "2023-11-29T00:00:00-05:00", timeInLoc.Format(chrono.WithLayout(time.RFC3339)))
 }
+
+// SQL Scan and Value tests
+func TestDateScanTruncatesClock(t *testing.T) {
+	// sql.NullTime will accept this as-is; our wrapper must truncate.
+	src := time.Date(2026, time.April, 15, 14, 30, 45, 123, time.UTC)
+	var got chrono.Date
+	require.NoError(t, got.Scan(src))
+	require.Equal(t, 2026, got.Year())
+	require.Equal(t, time.April, got.Month())
+	require.Equal(t, 15, got.Day())
+	// Clock must be zeroed.
+	h, m, s := got.ToStd().Clock()
+	require.Equal(t, 0, h)
+	require.Equal(t, 0, m)
+	require.Equal(t, 0, s)
+	require.Equal(t, 0, got.ToStd().Nanosecond())
+}
+
+func TestDateScanNil(t *testing.T) {
+	var got chrono.Date
+	require.NoError(t, got.Scan(nil))
+	require.True(t, got.IsZero())
+}
+
+func TestDateScanUnsupportedType(t *testing.T) {
+	var got chrono.Date
+	err := got.Scan(42)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "unsupported Scan")
+}
+
+func TestDateValue(t *testing.T) {
+	d := chrono.NewDate(2026, time.April, 15)
+	v, err := d.Value()
+	require.NoError(t, err)
+	got, ok := v.(time.Time)
+	require.True(t, ok)
+	require.Equal(t, 2026, got.Year())
+	require.Equal(t, time.April, got.Month())
+	require.Equal(t, 15, got.Day())
+	// Value() hands back the stored time.Time unchanged; clock is already zero
+	// because NewDate/toDate zeroed it.
+	h, m, s := got.Clock()
+	require.Equal(t, 0, h)
+	require.Equal(t, 0, m)
+	require.Equal(t, 0, s)
+}
+
+func TestDateScanValueRoundTrip(t *testing.T) {
+	orig := chrono.NewDate(2026, time.April, 15)
+	v, err := orig.Value()
+	require.NoError(t, err)
+	var got chrono.Date
+	require.NoError(t, got.Scan(v))
+	require.True(t, got.EqualDate(orig))
+}
