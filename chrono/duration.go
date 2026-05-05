@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -156,9 +159,119 @@ func (d Duration) ToDurationComponents() DurationComponents {
 	}
 }
 
+var (
+	iso8601Re = regexp.MustCompile(
+		`^P(?:(\d+)W|(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?)$`,
+	)
+	compactSegmentRe = regexp.MustCompile(`^(\d+(?:\.\d+)?)([a-zA-Z]+)`)
+
+	unitFactors = map[string]Duration{
+		"s": Second, "sec": Second, "secs": Second,
+		"second": Second, "seconds": Second,
+
+		"m": Minute, "min": Minute, "mins": Minute,
+		"minute": Minute, "minutes": Minute,
+
+		"h": Hour, "hr": Hour, "hrs": Hour,
+		"hour": Hour, "hours": Hour,
+
+		"d": Day, "day": Day, "days": Day,
+
+		"w": Week, "wk": Week, "wks": Week,
+		"week": Week, "weeks": Week,
+
+		"mo": Day * 30, "month": Day * 30, "months": Day * 30,
+
+		"y": Day * 365, "yr": Day * 365, "yrs": Day * 365,
+		"year": Day * 365, "years": Day * 365,
+	}
+)
+
+func parseISO8601Duration(dstr string) (Duration, error) {
+	if dstr == "P" || dstr == "PT" {
+		return 0, fmt.Errorf("duration: ISO 8601 must contain at least one component")
+	}
+
+	m := iso8601Re.FindStringSubmatch(dstr)
+	if len(m) == 0 {
+		return 0, errors.New("invalid ISO 8601 duration")
+	}
+
+	// Group 1: weeks (mutually exclusive with everything else, per spec).
+	if m[1] != "" {
+		w, _ := strconv.ParseInt(m[1], 10, 64)
+		return Duration(w) * Week, nil
+	}
+
+	iso8601Parts := []struct {
+		val    string
+		factor Duration
+	}{
+		{m[2], Day * 365},
+		{m[3], Day * 30},
+		{m[4], Day},
+		{m[5], Hour},
+		{m[6], Minute},
+		{m[7], Second},
+	}
+
+	var total Duration
+	any := false
+	for _, p := range iso8601Parts {
+		if p.val == "" {
+			continue
+		}
+		any = true
+		n, err := strconv.ParseInt(p.val, 10, 64)
+		if err != nil {
+			return 0, fmt.Errorf("duration: invalid ISO 8601 number %q: %w", p.val, err)
+		}
+		total += Duration(n) * p.factor
+	}
+	if !any {
+		return 0, fmt.Errorf("duration: ISO 8601 has no components: %q", dstr)
+	}
+	return Duration(total), nil
+}
+
+func parseCompact(s string) (Duration, error) {
+	var total int64
+	rest := strings.ReplaceAll(s, " ", "")
+	if rest == "" {
+		return 0, fmt.Errorf("duration: empty after trimming")
+	}
+
+	for len(rest) > 0 {
+		m := compactSegmentRe.FindStringSubmatch(rest)
+		if m == nil {
+			return 0, fmt.Errorf("duration: cannot parse segment near %q in %q", rest, s)
+		}
+
+		numStr, unitStr := m[1], strings.ToLower(m[2])
+		factor, ok := unitFactors[unitStr]
+		if !ok {
+			return 0, fmt.Errorf("duration: unknown unit %q", m[2])
+		}
+
+		// Allow decimals (e.g. "1.5h") and round to whole seconds.
+		f, err := strconv.ParseFloat(numStr, 64)
+		if err != nil {
+			return 0, fmt.Errorf("duration: invalid number %q: %w", numStr, err)
+		}
+		total += int64(f * float64(factor))
+
+		rest = rest[len(m[0]):]
+	}
+
+	return Duration(total), nil
+}
+
 func parseDuration(dstr string) (Duration, error) {
-	d, err := time.ParseDuration(dstr)
-	return Duration(d), err
+	dstr = strings.TrimSpace(dstr)
+	if isoStr := strings.ToUpper(dstr); isoStr[0] == 'P' {
+		return parseISO8601Duration(isoStr)
+	}
+	return parseCompact(dstr)
 }
 
 func (d Duration) IsZero() bool {
@@ -253,4 +366,24 @@ func (dc DurationComponents) StringWithOpts(optFns ...DurationStringerOptFn) str
 		components = append(components, fmt.Sprintf("%d%s", dc.Seconds, dcl.seconds))
 	}
 	return strings.Join(components, dcl.separator)
+}
+
+func (d Duration) MarshalGQL(w io.Writer) {
+	fmt.Fprintf(w, "\"%s\"", d.ToDurationComponents().String())
+}
+
+func (d *Duration) UnmarshalGQL(v interface{}) error {
+	var err error
+	switch v := v.(type) {
+	case string:
+		*d, err = parseDuration(v)
+		return err
+	case int:
+		*d = Duration(v) * Second
+		return nil
+	case float64:
+		*d = Duration(v) * Second
+		return nil
+	}
+	return errors.New("unable to unmarshal duration")
 }

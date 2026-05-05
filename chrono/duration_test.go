@@ -1,6 +1,7 @@
 package chrono_test
 
 import (
+	"bytes"
 	"encoding/json"
 	"testing"
 	"time"
@@ -62,12 +63,28 @@ func TestAbs(t *testing.T) {
 }
 
 func TestParseDuration(t *testing.T) {
-	durationStr := "3h30m"
-	expectedDuration := chrono.DurationFrom(3*time.Hour + 30*time.Minute)
 
-	parsedDuration, err := chrono.ParseDuration(durationStr)
-	assert.NoError(t, err, "Parsing should not return an error")
-	assert.Equal(t, expectedDuration, parsedDuration, "Parsed duration should match")
+	tests := []struct {
+		durationStr      string
+		expectedDuration chrono.Duration
+	}{
+		// Compact
+		{durationStr: "3h30m", expectedDuration: chrono.DurationFrom(3*time.Hour + 30*time.Minute)},
+		{durationStr: "1h", expectedDuration: chrono.DurationFrom(time.Hour)},
+		{durationStr: "30m", expectedDuration: chrono.DurationFrom(30 * time.Minute)},
+		{durationStr: "10s", expectedDuration: chrono.DurationFrom(10 * time.Second)},
+		// ISO 8601
+		{durationStr: "P1Y2M3DT4H5M6S", expectedDuration: 365*chrono.Day + 60*chrono.Day + 3*chrono.Day + 4*chrono.Hour + 5*chrono.Minute + 6*chrono.Second},
+		{durationStr: "P2M11D", expectedDuration: 71 * chrono.Day},
+		{durationStr: "PT4H30M", expectedDuration: 4*chrono.Hour + 30*chrono.Minute},
+		{durationStr: "P3W", expectedDuration: 3 * chrono.Week},
+	}
+
+	for _, test := range tests {
+		parsedDuration, err := chrono.ParseDuration(test.durationStr)
+		assert.NoError(t, err, "Parsing should not return an error", "input: "+test.durationStr)
+		assert.Equal(t, test.expectedDuration, parsedDuration, "Parsed duration should match", "input: "+test.durationStr)
+	}
 }
 
 func TestDynamoDBAttributeHandling(t *testing.T) {
@@ -122,4 +139,20 @@ func TestMarshalDuration(t *testing.T) {
 	jsonData, err := json.Marshal(testDur)
 	require.NoError(t, err)
 	require.Equal(t, `{"seconds":48,"minutes":33,"hours":11,"days":3,"weeks":2}`, string(jsonData))
+}
+
+func TestMarshalGQL(t *testing.T) {
+	tests := []struct {
+		d        chrono.Duration
+		expected string
+	}{
+		{d: chrono.DurationFrom(5 * time.Second), expected: `"5s"`},
+		{d: chrono.DurationFrom(1 * time.Minute), expected: `"1m"`},
+		{d: chrono.DurationFrom(1 * time.Hour), expected: `"1h"`},
+	}
+	for _, test := range tests {
+		buf := bytes.NewBuffer(nil)
+		test.d.MarshalGQL(buf)
+		require.Equal(t, test.expected, buf.String())
+	}
 }
